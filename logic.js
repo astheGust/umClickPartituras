@@ -19,7 +19,7 @@ document.getElementById("send").addEventListener("click", async (e) => {
         contentBlock.innerHTML = ""
         loading.style.display = "block"
         try {
-            const res = await fetch(`${urlDebug}/images?q=${encodeURIComponent(dice.value)}`)
+            const res = await fetch(`${url}/images?q=${encodeURIComponent(dice.value)}`)
             const dices = await res.json();
             for (x in dices.data) {
                 let resultBlock = document.createElement("div")
