@@ -4,6 +4,8 @@
 
 ## Sobre
 Aplicação web que centraliza a busca de partituras em diferentes plataformas. O usuário realiza uma única pesquisa e recebe resultados de diversos sites especializados em partituras.
+### Método de pesquisa:"nomeMusica + instrumento" 
+Exemplo:Für elise flute
 
 ## Tecnologias
 - Html
