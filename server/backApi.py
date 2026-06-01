@@ -28,7 +28,7 @@ def imgsLinks():
     try:       
         search = GoogleSearch({
         "engine":"google_images",
-        "q": query,
+        "q": f"{query} sheet",
         "safe":"active",
         "location": "Brazil",
         "hl": "pt",
@@ -53,17 +53,36 @@ def imgsLinks():
                 if site.lower() in source:
                     if site not in sheets:
                         sheets[site] = []
-                        sheets[site].append({
-                            "url":link,
-                            "img":image})   
+                    sheets[site].append({
+                        "url":link,
+                        "img":image})  
 
     except Exception as error:
         print(error)
         return jsonify({
-            "error": str(error)
+            "sucess":False,
+            "error": str(error),
+            'statusCode':500
         }), 500
 
-    return jsonify(sheets)
+    count = 0
+
+    for item in sheets.items():
+        if len(item[1]) > 2:
+            count+=1
+
+    if count > 2:
+        return jsonify({
+            "sucess":True,
+            "message":"Dados Enviados",
+            "statusCode":200,
+            "data":sheets
+            }),200
+    else: return jsonify({
+            "sucess":False,
+            "message":"Itens insuficientes",
+            'statusCode':206
+        }), 206
 
 if __name__ == "__main__":
     print("server rodando!")
