@@ -7,7 +7,7 @@ Aplicação web que centraliza a busca de partituras em diferentes plataformas. 
 
 ## Método de pesquisa: "nomeMusica + instrumento" 
 
-###Exemplo: 
+### Exemplo
 Moonlight Sonata piano
 Für elise Flute
 Canon in D violin
