@@ -20,7 +20,6 @@ allowed = [
   "mymusicsheet"
 ]
 
-ins=["piano","violin"]
 
 
 def searchQuery(query,instrumentList):
@@ -49,7 +48,14 @@ def searchQuery(query,instrumentList):
                     if site.lower() in source:
                         if site not in sheets:
                             sheets[site] = []
-                        sheets[site].append({
+                            duplicate = False
+                        for iten in sheets[site]:
+                            if(iten["url"] == link):
+                                print(iten["url"])
+                                duplicate = True
+                                break
+                        if(not duplicate):
+                            sheets[site].append({
                             "url":link,
                             "img":image,
                             "instrument":instrument})
@@ -78,7 +84,6 @@ def searchQuery(query,instrumentList):
                     sheets[site].append({
                         "url":link,
                         "img":image})
-                    
     return sheets
 
 
