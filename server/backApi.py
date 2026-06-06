@@ -20,31 +20,53 @@ allowed = [
   "mymusicsheet"
 ]
 
+ins=["piano","violin"]
 
-@app.route("/images",methods=["GET"])
-def imgsLinks():
-    query = request.args.get("q","")
-    if not query: return jsonify({"err":"Pesquisa Vazia"}),400
-    try:       
+
+def searchQuery(query,instrumentList):
+    sheets = {}
+
+    if (instrumentList[0] != ""):
+        for instrument in instrumentList:
+            search = GoogleSearch({
+            "engine":"google_images",
+            "q": f"{query} {instrument} sheet",
+            "safe":"active",
+            "location": "Brazil",
+            "hl": "pt",
+            "gl": "br",
+            "google_domain": "google.com.br",
+            "api_key":API_KEY
+            })
+            results  = search.get_dict()
+            rawDices =  dict(results)
+            imageResult = rawDices.get("images_results",[])
+            for result in imageResult:
+                source = result.get("source","").lower()
+                link = result.get("link","")
+                image = result.get("original","")
+                for site in allowed:
+                    if site.lower() in source:
+                        if site not in sheets:
+                            sheets[site] = []
+                        sheets[site].append({
+                            "url":link,
+                            "img":image,
+                            "instrument":instrument})
+    else:
         search = GoogleSearch({
-        "engine":"google_images",
-        "q": f"{query} sheet",
-        "safe":"active",
-        "location": "Brazil",
-        "hl": "pt",
-        "gl": "br",
-        "google_domain": "google.com.br",
-        "api_key":API_KEY
-        })
-
+            "engine":"google_images",
+            "q": f"{query} sheet",
+            "safe":"active",
+            "location": "Brazil",
+            "hl": "pt",
+            "gl": "br",
+            "google_domain": "google.com.br",
+            "api_key":API_KEY
+            })
         results  = search.get_dict()
-
-        if "error" in results:
-            return jsonify({"error":results["error"]}),400
-
         rawDices =  dict(results)
         imageResult = rawDices.get("images_results",[])
-        sheets={}
         for result in imageResult:
             source = result.get("source","").lower()
             link = result.get("link","")
@@ -55,8 +77,20 @@ def imgsLinks():
                         sheets[site] = []
                     sheets[site].append({
                         "url":link,
-                        "img":image})  
+                        "img":image})
+                    
+    return sheets
 
+
+@app.route("/images",methods=["GET"])
+def imgsLinks():
+    query = request.args.get("q","")
+    filter = request.args.get("filter","")
+    instruments = filter.split(",")
+    print(instruments)
+    if not query: return jsonify({"err":"Pesquisa Vazia"}),400
+    try:
+        sheets = searchQuery(query,instruments)
     except Exception as error:
         print(error)
         return jsonify({

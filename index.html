@@ -1,35 +1,72 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Busca de Partituras</title>
-<link rel="stylesheet" href="./styles.css">
-<script>
-    if(localStorage.getItem("mode")){
-    document.documentElement.classList.add("dark")
-}
-</script>
-<script src="./logic.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Busca de Partituras</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script>
+    if (localStorage.getItem("mode")) {
+      document.documentElement.classList.add("dark")
+    }
+  </script>
+  <script src="./logic.js" defer></script>
 
 </head>
+
 <body>
 
-<form>
-  <label for="query">
-    <input id="query" type="text" placeholder="Buscar partitura...">
-  </label>
-  <label for="send">
-    <input id="send" type="submit" value="Buscar">
-  </label>
-</form>
+  <form>
+    <label for="query"></label>
+    <input id="query" name="query" type="text" placeholder="Buscar partitura...">
 
-<div id="loading"></div>
-<article id="content">
+    <label for="send"></label>
+    <input id="send" name="send" type="submit" value="Buscar">
+    <section id="instrumentsFilter">
+      <span>Instrumentos:</span>
+      <div id="instrumentsBox">
+        <label class="instrumentOption">
+          <input class="instrumentCheckbox" type="checkbox" value="Piano" name="instrument">
+          Piano
+        </label>
+        <label class="instrumentOption">
+          <input class="instrumentCheckbox" type="checkbox" value="Violino" name="instrument">
+          Violino
+        </label>
+        <label class="instrumentOption">
+          <input class="instrumentCheckbox" type="checkbox" value="Flauta" name="instrument">
+          Flauta
+        </label>
+        <label class="instrumentOption">
+          <input class="instrumentCheckbox" type="checkbox" value="Guitarra" name="instrument">
+          Violão
+        </label>
+        <label class="instrumentOption">
+          <input class="instrumentCheckbox" type="checkbox" value="Bateria" name="instrument">
+          Bateria
+        </label>
+        <label class="instrumentOption">
+          <input class="instrumentCheckbox" type="checkbox" value="Violoncelo" name="instrument">
+          Violoncelo
+        </label>
+        <label class="instrumentOption">
+          <input class="instrumentCheckbox" type="checkbox" value="Saxofone" name="instrument">
+          Saxofone
+        </label>
+      </div>
+    </section>
+    <span id="textSpan" style="display:none;">"Filtros:(Piano,Violino) Aplicados"</span>
+  </form>
+  <p id="filterText" class=""></p>
 
-</article>
+  <div id="loading"></div>
+  <article id="content">
 
-<button id="lightMode">Dark</button>
+  </article>
+
+  <button id="lightMode">Dark</button>
 
 </body>
+
 </html>

@@ -1,6 +1,5 @@
 const url = "https://umclickpartituras.onrender.com"
 const urlDebug = "http://127.0.0.1:5000"
-const loading = document.getElementById("loading")
 
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -9,18 +8,19 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 })
 
+const loading = document.getElementById("loading")
 
 document.getElementById("send").addEventListener("click", async (e) => {
     e.preventDefault()
     let dice = document.getElementById("query")
-
     if (dice.value !== "") {
         const contentBlock = document.getElementById("content")
         contentBlock.innerHTML = ""
         loading.style.display = "block"
         try {
-            const res = await fetch(`${url}/images?q=${encodeURIComponent(dice.value)}`)
+            const res = await fetch(`${url}/images?q=${encodeURIComponent(dice.value)}&filter=${instruments}`)
             const dices = await res.json();
+            console.log(dices)
             for (x in dices.data) {
                 let resultBlock = document.createElement("div")
                 resultBlock.classList.add("result-block")
@@ -74,4 +74,28 @@ document.getElementById("lightMode").addEventListener("click", () => {
 
     }
 
+})
+
+const instrumentsCheckbox = document.querySelectorAll(".instrumentCheckbox")
+const filterP = document.getElementById("filterText")
+const instruments = []
+
+instrumentsCheckbox.forEach((checkBox) => {
+    checkBox.addEventListener("click", () => {
+        if (checkBox.checked) {
+            if (!instruments.includes(checkBox.value)) {
+                instruments.push(checkBox.value)
+                filterP.innerText = `Filtros aplicados: ${instruments.join(",")}`
+            }
+        } else {
+            let index = instruments.indexOf(checkBox.value)
+            instruments.splice(index, 1)
+            if (instruments.length > 0) {
+                filterP.innerText = `Filtros aplicados: ${instruments}`
+            } else {
+                filterP.innerText = ""
+            }
+
+        }
+    })
 })
