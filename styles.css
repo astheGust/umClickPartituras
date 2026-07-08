@@ -233,6 +233,10 @@ form label {
   padding: 16px;
   position: relative;
   transition: background .2s, border-color .2s;
+  width: 250px;
+  height: 300px;
+  align-items: center;
+  justify-content: center;
 }
 
 
@@ -272,8 +276,8 @@ form label {
 }
 
 .score-img {
-  width: 200px;
-  height: 260px;
+  width: 100%;
+  height: 100%;
   display: block;
   border: 1px solid var(--scoreImgBorder);
   border-radius: 2px;
@@ -281,6 +285,33 @@ form label {
   background: var(--scoreImgBg);
   transition: border-color .2s, box-shadow .2s, background .2s;
   cursor: pointer;
+}
+
+.score-img:hover {
+  border-color: #111;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+}
+
+.score-img-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.score-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.showcase a {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .score-img:hover {
@@ -446,7 +477,7 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
   display: flex;
   flex-direction: column;
   gap: 5px;
-  width: 260px;
+  width: 100%;
 }
 
 .authField label {
@@ -569,6 +600,100 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
   background: #2a1414;
   border-color: #5c1a1a;
   color: #fca5a5;
+}
+
+@media (max-width: 768px) {
+  form {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  #query {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  #send {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  #instrumentsFilter {
+    position: static;
+    width: 100%;
+    height: auto;
+    margin-top: 20px;
+    padding-left: 0;
+  }
+
+  #instrumentsBox {
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: auto;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  #filterText {
+    position: static;
+    text-align: center;
+    margin-top: 10px;
+    left: auto;
+  }
+
+  #content {
+    padding: 20px 16px;
+    gap: 20px;
+  }
+
+  .result-block {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .showcase {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    padding: 12px;
+  }
+
+  .score-img {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: 200px;
+  }
+
+  .favIcon {
+    bottom: 15px;
+    right: 15px;
+  }
+
+  .authForm {
+    padding: 24px 20px;
+  }
+
+  .authTitle {
+    font-size: 1.3rem;
+  }
+
+  .authField {
+    width: 100%;
+  }
+
+  .auth-section {
+    padding: 10px 20px;
+    justify-content: center;
+  }
+
+  #lightMode {
+    width: 40px;
+    height: 28px;
+    bottom: 2%;
+    right: 2%;
+    font-size: 0.8rem;
+  }
 }
 
 .auth-section {
