@@ -84,7 +84,7 @@ if (confirmUnfavoriteButton) {
         if (currentUnfavoriteUrl && currentUnfavoriteElement) {
             let token = localStorage.getItem("token")
             if (token) {
-                let req = await fetch(`${urlDebug}/favorites`, {
+                let req = await fetch(`${url}/favorites`, {
                     method: "DELETE",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -233,7 +233,7 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
         loading.style.display = "block"
 
         try {
-            const res = await fetch(`${urlDebug}/images?q=${encodeURIComponent(dice.value)}&filter=${instruments}`)
+            const res = await fetch(`${url}/images?q=${encodeURIComponent(dice.value)}&filter=${instruments}`)
             const dices = await res.json();
             if (dices.statusCode === 404) {
                 let infoText = document.createElement("p")
@@ -296,7 +296,7 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                 return showPopUp("Considere fazer seu login para poder favoritar")
             }
             if (showcases.length > 0) {
-                let req = await fetch(`${urlDebug}/checkFavorites`, {
+                let req = await fetch(`${url}/checkFavorites`, {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -328,7 +328,7 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                                     e.target.classList.toggle("favorite");
                                     e.target.setAttribute("aria-pressed", 'true')
                                     if (token) {
-                                        let postReq = await fetch(`${urlDebug}/favorites`, {
+                                        let postReq = await fetch(`${url}/favorites`, {
                                             method: "POST",
                                             headers: {
                                                 "Authorization": `Bearer ${token}`,
@@ -438,7 +438,7 @@ if (registerForm) {
         if (senha !== confirm) return showAuthError(registerForm, "As senhas não conferem.")
 
         try {
-            const req = await fetch(`${urlDebug}/register`, {
+            const req = await fetch(`${url}/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -474,7 +474,7 @@ if (loginForm) {
         if (!senha) return showAuthError(loginForm, "Preencha a senha.")
 
         try {
-            const req = await fetch(`${urlDebug}/login`, {
+            const req = await fetch(`${url}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -486,7 +486,7 @@ if (loginForm) {
             })
             const res = await req.json()
             if (res.verificado || res.verificado === false) {
-                await fetch(`${urlDebug}/sendEmail`, {
+                await fetch(`${url}/sendEmail`, {
                     method: "POST",
                     headers: { "Content-type": "application/json" },
                     body: JSON.stringify({ email })
