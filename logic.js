@@ -92,8 +92,7 @@ if (confirmUnfavoriteButton) {
                     },
                     body: JSON.stringify({ url: currentUnfavoriteUrl })
                 })
-                let res = await req.json()
-                window.location.reload();
+                //let res = await req.json()
             }
         }
         hideUnfavoriteModal()
