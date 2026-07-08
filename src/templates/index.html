@@ -5,17 +5,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Busca de Partituras</title>
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="/styles.css">
   <script>
     if (localStorage.getItem("mode")) {
       document.documentElement.classList.add("dark")
     }
   </script>
-  <script src="./logic.js" defer></script>
+  <script src="/logic.js" defer></script>
 
 </head>
 
 <body>
+  <header class="auth-section">
+    <a href="/login" class="auth-link">Login</a>
+    <span class="auth-separator">/</span>
+    <a href="/register" class="auth-link">Registro</a>
+  </header>
 
   <form>
     <label for="query"></label>
@@ -56,7 +61,7 @@
         </label>
       </div>
     </section>
-    <span id="textSpan" style="display:none;">"Filtros:(Piano,Violino) Aplicados"</span>
+    <span id="textSpan" style="display:none;"></span>
   </form>
   <p id="filterText" class=""></p>
 
@@ -67,6 +72,16 @@
 
   <button id="lightMode">Dark</button>
 
+  <div id="unfavoriteModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2>Confirmar Desfavoritar</h2>
+      <p>Tem certeza de que deseja remover esta partitura dos seus favoritos?</p>
+      <div class="modal-actions">
+        <button id="confirmUnfavorite" class="button-confirm">Sim, Desfavoritar</button>
+        <button id="cancelUnfavorite" class="button-cancel">Cancelar</button>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

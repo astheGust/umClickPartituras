@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro — umClickPartituras</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script>
+    if (localStorage.getItem("mode")) {
+      document.documentElement.classList.add("dark")
+    }
+  </script>
+  <script src="/logic.js" defer></script>
+</head>
+
+<body>
+
+  <div class="authContainer">
+    <form class="authForm" id="registerForm">
+      <h1 class="authTitle">Criar Conta</h1>
+
+      <div class="authField">
+        <label for="regEmail">Email</label>
+        <input id="regEmail" name="email" type="email" placeholder="seu@email.com" required autocomplete="email">
+      </div>
+
+      <div class="authField">
+        <label for="regPassword">Senha</label>
+        <div class="passwordWrapper">
+          <input id="regPassword" name="password" type="password" placeholder="Mínimo 6 caracteres" required autocomplete="new-password" minlength="6">
+          <button type="button" class="togglePassword" aria-label="Mostrar senha">👁</button>
+        </div>
+      </div>
+
+      <div class="authField">
+        <label for="regConfirm">Confirmar Senha</label>
+        <div class="passwordWrapper">
+          <input id="regConfirm" name="confirm" type="password" placeholder="Repita a senha" required autocomplete="new-password">
+          <button type="button" class="togglePassword" aria-label="Mostrar senha">👁</button>
+        </div>
+      </div>
+
+      <button type="submit" class="authSubmit">Cadastrar</button>
+
+      <p class="authLink">
+        Já tem conta? <a href="/login">Entre aqui</a>
+      </p>
+    </form>
+  </div>
+
+  <button id="lightMode">Dark</button>
+
+</body>
+
+</html>

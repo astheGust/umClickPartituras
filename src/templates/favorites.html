@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Músicas Favoritas</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script defer src="/logic.js"></script>
+
+</head>
+
+<body>
+    <form>
+        <label for="query">
+            <input type="text" id="query" placeholder="Pesquise suas músicas favoritas...">
+        </label>
+        <button type="submit" id="send">Buscar</button>
+    </form>
+    <div id="loading"></div>
+    <div id="content"></div>
+    <button id="lightMode">Dark</button>
+
+    <div id="unfavoriteModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Desfavoritar Partitura</h2>
+            <p>Tem certeza de que deseja remover esta partitura dos seus favoritos?</p>
+            <div class="modal-actions">
+                <button id="confirmUnfavorite" class="button-confirm">Sim, Remover</button>
+                <button id="cancelUnfavorite" class="button-cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

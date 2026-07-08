@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — umClickPartituras</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script>
+    if (localStorage.getItem("mode")) {
+      document.documentElement.classList.add("dark")
+    }
+  </script>
+  <script src="./logic.js" defer></script>
+</head>
+
+<body>
+
+  <div class="authContainer">
+    <form class="authForm" id="loginForm">
+      <h1 class="authTitle">Entrar</h1>
+
+      <div class="authField">
+        <label for="loginEmail">Email</label>
+        <input id="loginEmail" name="email" type="email" placeholder="seu@email.com" required autocomplete="email">
+      </div>
+
+      <div class="authField">
+        <label for="loginPassword">Senha</label>
+        <div class="passwordWrapper">
+          <input id="loginPassword" name="password" type="password" placeholder="Sua senha" required autocomplete="current-password">
+          <button type="button" class="togglePassword" aria-label="Mostrar senha">👁</button>
+        </div>
+      </div>
+
+      <button type="submit" class="authSubmit">Entrar</button>
+
+      <p class="authLink">
+        Não tem conta? <a href="/register">Cadastre-se</a>
+      </p>
+    </form>
+  </div>
+
+  <button id="lightMode">Dark</button>
+
+</body>
+
+</html>

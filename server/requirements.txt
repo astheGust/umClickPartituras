@@ -1,5 +1,0 @@
-flask
-flask-cors
-google-search-results==2.4.2
-python-dotenv
-gunicorn

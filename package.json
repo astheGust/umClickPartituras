@@ -1,0 +1,15 @@
+{
+  "name": "pag3",
+  "version": "1.0.0",
+  "description": "umClickPartituras",
+  "main": "routes.py",
+  "type": "module",
+  "scripts": {
+    "test": "python src/routes.py"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0"
+  }
+}
