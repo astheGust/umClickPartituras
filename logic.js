@@ -1,7 +1,7 @@
 const url =
     window.location.hostname === "localhost"
         ? "http://127.0.0.1:5000"
-        : "https://seu-backend.onrender.com";
+        : "https://umclickpartituras.onrender.com";
 
 
 window.addEventListener("DOMContentLoaded", () => {
