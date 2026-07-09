@@ -1,5 +1,7 @@
-const url = "https://umclickpartituras.onrender.com"
-const urlDebug = "http://127.0.0.1:5000"
+const url =
+    window.location.hostname === "localhost"
+        ? "http://127.0.0.1:5000"
+        : "https://seu-backend.onrender.com";
 
 
 window.addEventListener("DOMContentLoaded", () => {
