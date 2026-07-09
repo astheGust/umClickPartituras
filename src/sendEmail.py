@@ -1,41 +1,59 @@
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 import os
+import resend
 from dotenv import load_dotenv
+
 load_dotenv()
 
-EMAIL = os.getenv("EMAIL")
-EMAILPASS = os.getenv("EMAILSECRET")
+resend.api_key = os.getenv("RESEND_API_KEY")
 
 
-def enviarEmail(destinatario,link):
-    smtp_server = "smtp.gmail.com"
-    smtp_port = 587 #porta padrão para tls/starttls
-    remetente = EMAIL
-    senha = EMAILPASS
-
-    msg = MIMEMultipart()
-    msg["From"] = remetente
-    msg["To"] = destinatario
-    msg["Subject"] = "Verifique sua conta"    
-
-    html_body = f"<p>Clique no link para realizar a verificação: <a href={link}>Verificar</a></p>"
-    msg.attach(MIMEText(html_body,"html","utf-8"))
-
-    server = None
+def enviarEmail(destinatario, link):
     try:
-        print("tentando conectar")
-        server = smtplib.SMTP(smtp_server, smtp_port, timeout=10)
-        server.starttls()
-        server.login(remetente,senha)
+        resposta = resend.Emails.send(
+            {
+                "from": "onboarding@resend.dev",
+                "to": [destinatario],
+                "subject": "Verifique sua conta",
+                "html": f"""
+                <html>
+                    <body>
+                        <h2>Bem-vindo ao Click Partituras!</h2>
 
-        server.sendmail(remetente,destinatario,msg.as_string())
+                        <p>
+                            Clique no botão abaixo para verificar sua conta:
+                        </p>
+
+                        <p>
+                            <a href="{link}"
+                               style="
+                                    background:#2563eb;
+                                    color:white;
+                                    padding:12px 20px;
+                                    text-decoration:none;
+                                    border-radius:6px;
+                                    display:inline-block;
+                               ">
+                                Verificar Conta
+                            </a>
+                        </p>
+
+                        <p>
+                            Caso o botão não funcione, copie e cole o link abaixo no navegador:
+                        </p>
+
+                        <p>{link}</p>
+                    </body>
+                </html>
+                """
+            }
+        )
+
+        print("Email enviado com sucesso!")
+        print(resposta)
+
+        return True
+
     except Exception as err:
-        print("error")
-        print(type(err))
+        print("Erro ao enviar email:")
         print(err)
         raise
-    finally:
-        if(server is not None):
-            server.quit()
