@@ -1,33 +1,67 @@
-import smtplib
-from email.mime.multipart import MIMEMultipart 
-from email.mime.text import MIMEText
 import os
+
 from dotenv import load_dotenv
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
+
 load_dotenv()
+
 EMAIL = os.getenv("EMAIL")
-EMAILPASS = os.getenv("EMAILSECRET")
-def enviarEmail(destinatario,link):
-        smtp_server = "smtp.gmail.com"
-        smtp_port = 587 #porta padrão para tls/starttls
-        remetente = EMAIL
-        senha = EMAILPASS
-        msg = MIMEMultipart()
-        msg["From"] = remetente
-        msg["To"] = destinatario
-        msg["Subject"] = "Verifique sua conta"
-        html_body = f"<p>Clique no link para realizar a verificação: <a href={link}>Verificar</a></p>"
-        msg.attach(MIMEText(html_body,"html","utf-8"))
-        server = None 
-        try: 
-            print("tentando conectar")
-            server = smtplib.SMTP(smtp_server, smtp_port, timeout=10)
-            server.starttls()
-            server.login(remetente,senha)
-            server.sendmail(remetente,destinatario,msg.as_string())
-        except Exception as err: 
-            print("error")
-            print(type(err))
-            print(err) 
-            raise 
-        finally:
-            if(server is not None): server.quit()
+API_KEY = os.getenv("BREVO_API_KEY")
+
+
+def enviarEmail(destinatario, link):
+    configuration = sib_api_v3_sdk.Configuration()
+    configuration.api_key["api-key"] = API_KEY
+
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+        sib_api_v3_sdk.ApiClient(configuration)
+    )
+
+    email = sib_api_v3_sdk.SendSmtpEmail(
+        sender={
+            "name": "Click Partituras",
+            "email": EMAIL
+        },
+        to=[
+            {
+                "email": destinatario
+            }
+        ],
+        subject="Verifique sua conta",
+        html_content=f"""
+<html>
+<body>
+
+<h2>Bem-vindo ao Click Partituras!</h2>
+
+<p>
+Clique no botão abaixo para verificar sua conta.
+</p>
+
+<p>
+<a href="{link}"
+style="
+background:#2563eb;
+color:white;
+padding:12px 20px;
+text-decoration:none;
+border-radius:6px;
+display:inline-block;
+">
+Verificar Conta
+</a>
+</p>
+
+</body>
+</html>
+"""
+    )
+
+    try:
+        api_instance.send_transac_email(email)
+        return True
+
+    except ApiException as err:
+        print(err)
+        raise
