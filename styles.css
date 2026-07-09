@@ -619,6 +619,7 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
   }
 
   #instrumentsFilter {
+    display: none;
     position: static;
     width: 100%;
     height: auto;

@@ -23,6 +23,7 @@ def enviarEmail(destinatario,link):
     html_body = f"<p>Clique no link para realizar a verificação: <a href={link}>Verificar</a></p>"
     msg.attach(MIMEText(html_body,"html","utf-8"))
 
+    server = None
     try:
         server = smtplib.SMTP(smtp_server,smtp_port)
         server.starttls()
@@ -32,5 +33,5 @@ def enviarEmail(destinatario,link):
     except Exception as err:
         raise Exception("Erro ao enviar E-mail:",err)
     finally:
-        if(server):
+        if(server is not None):
             server.quit()
