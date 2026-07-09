@@ -94,7 +94,7 @@ if (confirmUnfavoriteButton) {
                     },
                     body: JSON.stringify({ url: currentUnfavoriteUrl })
                 })
-                //let res = await req.json()
+                //currenUnfavoriteElemente O CORAÇÃO colocar como false e tirar o classlist dele, checar se é aqui memso que faz isso
             }
         }
         hideUnfavoriteModal()
@@ -235,8 +235,7 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
 
         try {
             const res = await fetch(`${url}/images?q=${encodeURIComponent(dice.value)}&filter=${instruments}`)
-            const dices = await res.json();
-            if (dices.statusCode === 404) {
+            if (res.status === 404) {
                 let infoText = document.createElement("p")
                 infoText.classList.add("infoMessage")
                 infoText.textContent = `Resultados Insuficientes para: "${dices.data["pesquisa"]}"`
@@ -244,18 +243,19 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                 clean("afterSearch")
                 return
             }
+            const dices = await res.json();
 
             const idsProcessados = new Set();
 
-            for (set in dices.data) {
+            for (const key in dices.data) {
                 let resultBlock = document.createElement("div")
                 resultBlock.classList.add("result-block")
                 let title = document.createElement("span")
-                let text = document.createTextNode(set)
+                let text = document.createTextNode(key)
                 title.appendChild(text)
                 title.classList.add("source-title")
                 contentBlock.appendChild(title)
-                dices.data[set].forEach((sheet) => {
+                dices.data[key].forEach((sheet) => {
                     const idMidiaAtual = obterIdUnicoMidia(sheet["url"]);
 
                     if (idMidiaAtual !== "" && idsProcessados.has(idMidiaAtual)) {
