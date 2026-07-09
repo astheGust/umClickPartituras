@@ -437,7 +437,7 @@ if (registerForm) {
         if (senha !== confirm) return showAuthError(registerForm, "As senhas não conferem.")
 
         try {
-            const req = await fetch(`${url}/register`, {
+            const req = await fetch(`${urlDebug}/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
