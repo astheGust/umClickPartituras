@@ -1,4 +1,5 @@
 from flask import Flask, render_template, send_from_directory,jsonify,request,g
+from flask_cors import CORS
 from hashPass import hashPassword,comparePassword
 from bdConnection import sqlSelect,sqlQuery
 from sendEmail import enviarEmail
@@ -12,6 +13,7 @@ load_dotenv()
 rota = "https://umclickpartituras.onrender.com"
 JWT_SECRET = os.getenv("JWTSECRET")
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/styles.css")
 def styles():

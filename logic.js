@@ -238,7 +238,7 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
             if (res.status === 404) {
                 let infoText = document.createElement("p")
                 infoText.classList.add("infoMessage")
-                infoText.textContent = `Resultados Insuficientes para: "${dices.data["pesquisa"]}"`
+                infoText.textContent = `Resultados Insuficientes para: ${res.data["pesquisa"]}`
                 contentBlock.appendChild(infoText)
                 clean("afterSearch")
                 return
