@@ -232,18 +232,22 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
     if (dice.value !== "") {
         clean("content")
         loading.style.display = "block"
-        const dices = await res.json();
-
         try {
-            const res = await fetch(`${url}/images?q=${encodeURIComponent(dices.value)}&filter=${instruments}`)
+            const req = await fetch(`${url}/images?q=${encodeURIComponent(dice.value)}&filter=${instruments}`)
+            const dices = await req.json();
+            console.log("if a frente")
             if (dices.statusCode === 404) {
+                console.log("deu erro mesmo")
                 let infoText = document.createElement("p")
                 infoText.classList.add("infoMessage")
                 infoText.textContent = `Resultados Insuficientes para: ${dices.data["pesquisa"]}`
                 contentBlock.appendChild(infoText)
                 clean("afterSearch")
+                console.log("antes do return")
                 return
             }
+
+            console.log("passou")
 
             const idsProcessados = new Set();
 

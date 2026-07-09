@@ -16,69 +16,57 @@ allowed = [
   "mymusicsheet"
 ]
 
+traducao_instrumentos = {
+    "piano": "piano",
+    "violino": "violin",
+    "flauta": "flute",
+    "violão": "guitar",
+    "bateria": "drums",
+    "violoncelo": "cello",
+    "saxofone": "saxophone"
+}
 
-
-def searchQuery(query,instrumentList):
+def searchQuery(query, instrumentList):
     sheets = {}
     try:
-        if (instrumentList[0] != ""):
-            for instrument in instrumentList:
-                search = GoogleSearch({
-                "engine":"google_images",
-                "q": f"{query} {instrument} sheet",
-                "safe":"active",
-                "location": "Brazil",
-                "hl": "pt",
-                "gl": "br",
-                "google_domain": "google.com.br",
-                "api_key":API_KEY
-                })
-                results  = search.get_dict()
-                rawDices =  dict(results)
-                imageResult = rawDices.get("images_results",[])
-                for result in imageResult:
-                    source = result.get("source","").lower()
-                    link = result.get("link","")
-                    image = result.get("original","")
-                    for site in allowed:
-                        if site.lower() in source:
-                            if site not in sheets:
-                                sheets[site] = []
-                                duplicate = False
-                            for item in sheets[site]:
-                                if(item["url"] == link):
-                                    duplicate = True
-                                    break
-                            if(not duplicate):
-                                sheets[site].append({
-                                "url":link,
-                                "img":image,
-                                "instrument":instrument})
-        else:
-            search = GoogleSearch({
-                "engine":"google_images",
-                "q": f"{query} sheet",
-                "safe":"active",
-                "location": "Brazil",
-                "hl": "pt",
-                "gl": "br",
-                "google_domain": "google.com.br",
-                "api_key":API_KEY
-                })
-            results  = search.get_dict()
-            rawDices =  dict(results)
-            imageResult = rawDices.get("images_results",[])
-            for result in imageResult:
-                source = result.get("source","").lower()
-                link = result.get("link","")
-                image = result.get("original","")
-                for site in allowed:
-                    if site.lower() in source:
-                        if site not in sheets:
-                            sheets[site] = []
+        instrumentos_ingles = [traducao_instrumentos.get(i.lower(), i) for i in instrumentList]
+        sites_operator = " OR ".join([f"site:{site}" for site in allowed])
+        instruments_str = ""
+        if instrumentos_ingles and instrumentos_ingles[0] != "":
+            instruments_str = f"({' OR '.join(instrumentos_ingles)})"
+        final_query = f"{query} {instruments_str} music sheet ({sites_operator})".strip()
+
+        search = GoogleSearch({
+            "engine": "google_images",
+            "q": final_query,
+            "safe": "active",
+            "location": "Brazil",
+            "hl": "pt",
+            "gl": "br",
+            "google_domain": "google.com.br",
+            "api_key": API_KEY
+        })
+        
+        results = search.get_dict()
+        image_results = results.get("images_results", [])
+        
+        for result in image_results:
+            source = result.get("source", "").lower()
+            link = result.get("link", "")
+            image = result.get("thumbnail", "")
+            
+            for site in allowed:
+                if site.lower() in source:
+                    if site not in sheets:
+                        sheets[site] = []
+                    
+                    if not any(item["url"] == link for item in sheets[site]):
                         sheets[site].append({
-                            "url":link,
-                            "img":image})
+                            "url": link,
+                            "img": image
+                        })
+                    break 
     except Exception as err:
-        raise Exception("Erro na conexão com a API de busca:",err)
+        raise Exception(f"Erro na conexão com a API de busca: {str(err)}")
+        
     return sheets
