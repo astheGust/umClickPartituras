@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 load_dotenv()
-rota = "http://127.0.0.1:5000"
+rota = "https://umclickpartituras.onrender.com"
 JWT_SECRET = os.getenv("JWTSECRET")
 app = Flask(__name__)
 
