@@ -25,12 +25,14 @@ def enviarEmail(destinatario,link):
 
     server = None
     try:
+        print("tentando conectar")
         server = smtplib.SMTP(smtp_server,smtp_port)
         server.starttls()
         server.login(remetente,senha)
 
         server.sendmail(remetente,destinatario,msg.as_string())
     except Exception as err:
+        print("error")
         raise Exception("Erro ao enviar E-mail:",err)
     finally:
         if(server is not None):
