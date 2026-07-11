@@ -284,5 +284,22 @@ def checkFavorites():
     else:
         return jsonify({"message":"error"}),404
     
+    
+@app.route("/heath",methods=["GET"])
+def heathCheck():
+    try:
+        sqlSelect("SELECT user_id FROM usuarios WHERE user_id = %s",["2"])
+        return jsonify({
+                "success": True,
+                "message": "API e Banco de Dados estão ONLINE!"
+            }), 200
+        
+    except Exception as err:
+        return jsonify({
+            "success": False,
+            "message": "API online, mas o Banco de Dados falhou!",
+            "error": str(err)
+        }), 500
+        
 if __name__ == '__main__':
     app.run(debug=True)

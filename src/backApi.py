@@ -28,7 +28,7 @@ def duplicado(link_atual, lista_do_site):
     for item in lista_do_site:
         if item["url"] == link_atual:
             return True 
-    return False
+    return False    
 
 
 def searchQuery(query, instrumentList):

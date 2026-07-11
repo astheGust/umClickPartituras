@@ -8,6 +8,27 @@ psw = os.getenv("SENHA")
 dataBase = os.getenv("BASEDEDADOS")
 rootUser = os.getenv("ADMIN")
 port = os.getenv("PORT")
+
+def working():
+    try:
+        with mysql.connector.connect(
+        host=host,
+        user=rootUser,
+        port=port,
+        password=psw,
+        database="clickpartiturasdb",
+        charset="utf8mb4"
+        ) as conn:
+            with conn.cursor() as cursor:
+                    cursor.execute("SELECT user_id from usuarios WHERE user_id = %s",["2"])
+                    return cursor.fetchall()
+    except mysql.connector.Error as err:
+        raise mysql.connector.Error("Erro Interno no Bd:",err)
+    
+    
+x = working()
+print(x)
+
 def sqlSelect(query,params):#**`sqlSelect` retorna apenas primeira linha**
     try:
         with mysql.connector.connect(
