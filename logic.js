@@ -1,7 +1,7 @@
-const url =
-    window.location.hostname === "localhost"
-        ? "http://127.0.0.1:5000"
-        : "https://umclickpartituras.onrender.com";
+const url ="http://127.0.0.1:5000"
+    //window.location.hostname === "localhost"
+    //    ? "http://127.0.0.1:5000"
+    //    : "https://umclickpartituras.onrender.com";
 
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -94,7 +94,7 @@ if (confirmUnfavoriteButton) {
                     },
                     body: JSON.stringify({ url: currentUnfavoriteUrl })
                 })
-                //currenUnfavoriteElemente O CORAÇÃO colocar como false e tirar o classlist dele, checar se é aqui memso que faz isso
+                //currenUnfavoriteElemente O CORAÇÃO colocar como false e tirar o classlist dele, checar se é aqui memso que faz isso, pra n recarregar a pagina
             }
         }
         hideUnfavoriteModal()
@@ -201,7 +201,7 @@ function obterIdUnicoMidia(url) {
         }
 
         if (hostname.includes("sheetmusicdirect.com")) {
-            const partes = pathname.filter(Boolean); // remove vazios
+            const partes = pathname.filter(Boolean);
             return `smd-${partes[partes.length - 1]}`;
         }
 
@@ -237,17 +237,16 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
             const dices = await req.json();
             console.log("if a frente")
             if (dices.statusCode === 404) {
-                console.log("deu erro mesmo")
                 let infoText = document.createElement("p")
                 infoText.classList.add("infoMessage")
                 infoText.textContent = `Resultados Insuficientes para: ${dices.data["pesquisa"]}`
                 contentBlock.appendChild(infoText)
                 clean("afterSearch")
-                console.log("antes do return")
                 return
             }
-
-            console.log("passou")
+            if(dices.statusCode === 500){
+                console.log("Informe o erro ao responsável:",dices.message)
+            }
 
             const idsProcessados = new Set();
 
@@ -433,11 +432,9 @@ if (registerForm) {
         const senha = document.getElementById("regPassword").value
         const confirm = document.getElementById("regConfirm").value
 
-        // Remove erros anteriores
         const oldError = registerForm.querySelector(".authError")
         if (oldError) oldError.remove()
 
-        // Validações
         if (!email) return showAuthError(registerForm, "Preencha o email.")
         if (senha.length < 6) return showAuthError(registerForm, "A senha deve ter no mínimo 6 caracteres.")
         if (senha !== confirm) return showAuthError(registerForm, "As senhas não conferem.")

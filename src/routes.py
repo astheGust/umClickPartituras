@@ -10,7 +10,8 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 load_dotenv()
-rota = "https://umclickpartituras.onrender.com"
+#rota = "https://umclickpartituras.onrender.com"
+rota ="http://127.0.0.1:5000"
 JWT_SECRET = os.getenv("JWTSECRET")
 app = Flask(__name__)
 CORS(app)
@@ -162,26 +163,25 @@ def imgsLinks():
             'statusCode':500
         }), 500
 
-    count = 0
 
-    for item in sheets.items():
-        if len(item[1]) > 1:
-            count+=1
+    imgsCount = sum(len(img) for img in sheets.values())
 
-    if count >= 2:
+    if imgsCount > 1:
         return jsonify({
-            "success":True, #OK
-            "message":"Dados Enviados",
-            "statusCode":200,
-            "data":sheets
-            }),200
-    else: return jsonify({
-            "success":False, #Não foram encontrados dados suficientes
-            "message":"Itens Insuficintes",
-            "data":{"pesquisa":query,"filtros":filter},
-            'statusCode':404
+            "success": True, 
+            "message": "Dados Enviados",
+            "statusCode": 200,
+            "data": sheets
+        }), 200
+    else: 
+        return jsonify({
+            "success": False, 
+            "message": "Itens Insuficientes",
+            "data": {"pesquisa": query, "filtros": filter},
+            "statusCode": 404,
+            "dado": sheets
         }), 404
-
+#
 #Rotas Protegidas:
 
 #EM DESENVOLVIMENTO
