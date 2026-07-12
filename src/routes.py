@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 load_dotenv()
-#rota = "https://umclickpartituras.onrender.com"
-rota ="http://127.0.0.1:5000"
+rota = "https://umclickpartituras.onrender.com"
+#rota ="http://127.0.0.1:5000"
 JWT_SECRET = os.getenv("JWTSECRET")
 app = Flask(__name__)
 CORS(app)
@@ -285,7 +285,7 @@ def checkFavorites():
         return jsonify({"message":"error"}),404
     
     
-@app.route("/heath",methods=["GET"])
+@app.route("/health",methods=["GET"])
 def heathCheck():
     try:
         sqlSelect("SELECT user_id FROM usuarios WHERE user_id = %s",["2"])

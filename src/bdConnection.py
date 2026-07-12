@@ -26,9 +26,6 @@ def working():
         raise mysql.connector.Error("Erro Interno no Bd:",err)
     
     
-x = working()
-print(x)
-
 def sqlSelect(query,params):#**`sqlSelect` retorna apenas primeira linha**
     try:
         with mysql.connector.connect(

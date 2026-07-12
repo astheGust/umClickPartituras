@@ -1,7 +1,7 @@
-const url ="http://127.0.0.1:5000"
-    //window.location.hostname === "localhost"
-    //    ? "http://127.0.0.1:5000"
-    //    : "https://umclickpartituras.onrender.com";
+const url = "https://umclickpartituras.onrender.com"
+//window.location.hostname === "localhost"
+//    ? "http://127.0.0.1:5000"
+//    : "https://umclickpartituras.onrender.com";
 
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -94,7 +94,10 @@ if (confirmUnfavoriteButton) {
                     },
                     body: JSON.stringify({ url: currentUnfavoriteUrl })
                 })
-                //currenUnfavoriteElemente O CORAÇÃO colocar como false e tirar o classlist dele, checar se é aqui memso que faz isso, pra n recarregar a pagina
+                if(req.ok){
+                    currentUnfavoriteElement.classList.remove("favorite")
+                    favoriteIcon.setAttribute("aria-pressed", 'false');
+                }
             }
         }
         hideUnfavoriteModal()
@@ -172,7 +175,6 @@ if (cancelUnfavoriteButton) {
 //    }
 //});
 
-
 // Lógica para pegar musica unica
 function obterIdUnicoMidia(url) {
     if (!url) return "";
@@ -235,7 +237,6 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
         try {
             const req = await fetch(`${url}/images?q=${encodeURIComponent(dice.value)}&filter=${instruments}`)
             const dices = await req.json();
-            console.log("if a frente")
             if (dices.statusCode === 404) {
                 let infoText = document.createElement("p")
                 infoText.classList.add("infoMessage")
@@ -244,12 +245,11 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                 clean("afterSearch")
                 return
             }
-            if(dices.statusCode === 500){
-                console.log("Informe o erro ao responsável:",dices.message)
+            if (dices.statusCode === 500) {
+                console.log("Informe o erro ao responsável:", dices.message)
             }
 
             const idsProcessados = new Set();
-
             for (const key in dices.data) {
                 let resultBlock = document.createElement("div")
                 resultBlock.classList.add("result-block")
@@ -258,22 +258,20 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                 title.appendChild(text)
                 title.classList.add("source-title")
                 contentBlock.appendChild(title)
-                dices.data[key].forEach((sheet) => {
+                dices.data[key].forEach((sheet, i) => {
                     const idMidiaAtual = obterIdUnicoMidia(sheet["url"]);
-
                     if (idMidiaAtual !== "" && idsProcessados.has(idMidiaAtual)) {
                         return
                     }
                     if (idMidiaAtual !== "") {
                         idsProcessados.add(idMidiaAtual);
                     }
-
                     let showcase = document.createElement("div")
                     let link = document.createElement("a")
                     link.setAttribute("target", "_blank")
                     let img = document.createElement("img")
                     let favoriteIcon = document.createElement("div")
-                    favoriteIcon.classList.add("favIcon")
+                    favoriteIcon.classList.add("favIcon", `${key}${i}`)
                     showcase.classList.add("showcase")
                     img.classList.add("score-img")
                     img.src = sheet["img"]
@@ -307,7 +305,6 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                     }
                 })
 
-
                 if (req.ok) {
                     const res = await req.json()
                     const favoritosIds = (res.favoritos || []).map(([url,]) => obterIdUnicoMidia(url));
@@ -325,7 +322,6 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                             favoriteIcon.setAttribute("aria-pressed", 'false');
                         }
 
-
                         favoriteIcon.addEventListener("click", async (e) => {
                             try {
                                 if (e.target.getAttribute("aria-pressed") !== 'true') {
@@ -340,6 +336,7 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                                             },
                                             body: JSON.stringify({ url: sheetUrl, href: imgSrc })
                                         })
+
                                         let postRes = await postReq.json()
                                     }
                                 } else {
