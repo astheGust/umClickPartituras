@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 load_dotenv()
-rota = os.get_env("ROTAATUAL")
+rota = os.getenv("ROTAATUAL")
 JWT_SECRET = os.getenv("JWTSECRET")
 app = Flask(__name__)
 CORS(app)

@@ -1,10 +1,9 @@
-const url
-if("https" in window.location.href){
-    url = "https://umclickpartituras.onrender.com"
+let url = ""
+if(window.location.href.includes("https")){
+    url ="https://umclickpartituras.onrender.com"
 }else{
-    url = "http://127.0.0.1:5000"
+    url ="http://127.0.0.1:5000"
 }
-
 
 window.addEventListener("DOMContentLoaded", () => {
     if (localStorage.getItem("mode")) {
@@ -13,7 +12,6 @@ window.addEventListener("DOMContentLoaded", () => {
     if (localStorage.getItem("token")) {
         document.querySelector(".sign").classList.add("hidden")
         document.querySelector("#unsign").classList.remove("hidden")
-
     } else {
         document.querySelector(".sign").classList.remove("hidden")
         document.querySelector("#unsign").classList.add("hidden")
@@ -269,7 +267,7 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
         clean("content")
         loading.style.display = "block"
         try {
-            const req = await fetch(`${url}/images?q=${encodeURIComponent(dice.value)}&filter=${instruments}`)
+            const req = await fetch(`${url}/images?q=${encodeURIComponent(dice.value.trim())}&filter=${instruments}`)
             const dices = await req.json();
             if (dices.statusCode === 404) {
                 let infoText = document.createElement("p")
