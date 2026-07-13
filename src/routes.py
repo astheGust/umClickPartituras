@@ -10,8 +10,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 load_dotenv()
-rota = "https://umclickpartituras.onrender.com"
-#rota ="http://127.0.0.1:5000"
+rota = os.get_env("ROTAATUAL")
 JWT_SECRET = os.getenv("JWTSECRET")
 app = Flask(__name__)
 CORS(app)
@@ -165,7 +164,6 @@ def imgsLinks():
 
 
     imgsCount = sum(len(img) for img in sheets.values())
-
     if imgsCount > 1:
         return jsonify({
             "success": True, 
@@ -283,8 +281,7 @@ def checkFavorites():
         }), 500
     else:
         return jsonify({"message":"error"}),404
-    
-    
+        
 @app.route("/health",methods=["GET"])
 def heathCheck():
     try:

@@ -1,7 +1,9 @@
-const url = "https://umclickpartituras.onrender.com"
-//window.location.hostname === "localhost"
-//    ? "http://127.0.0.1:5000"
-//    : "https://umclickpartituras.onrender.com";
+const url
+if("https" in window.location.href){
+    url = "https://umclickpartituras.onrender.com"
+}else{
+    url = "http://127.0.0.1:5000"
+}
 
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -9,11 +11,12 @@ window.addEventListener("DOMContentLoaded", () => {
         document.getElementById("lightMode").innerText = "Light"
     }
     if (localStorage.getItem("token")) {
-        document.querySelector(".auth-section").style.display = "none"
-        document.querySelector("#instrumentsFilter").style.top = "6px"
+        document.querySelector(".sign").classList.add("hidden")
+        document.querySelector("#unsign").classList.remove("hidden")
+
     } else {
-        document.querySelector(".auth-section").style.display = "flex"
-        document.querySelector("#instrumentsFilter").style.top = "60px"
+        document.querySelector(".sign").classList.remove("hidden")
+        document.querySelector("#unsign").classList.add("hidden")
     }
 })
 
@@ -52,8 +55,7 @@ function showPopUp(message) {
         popUp.remove()
     }, 3000)
 }
-
-// Lógica para o modal de desfavoritar
+//desfavoritar partituras
 const unfavoriteModal = document.getElementById("unfavoriteModal")
 const confirmUnfavoriteButton = document.getElementById("confirmUnfavorite")
 const cancelUnfavoriteButton = document.getElementById("cancelUnfavorite")
@@ -94,20 +96,53 @@ if (confirmUnfavoriteButton) {
                     },
                     body: JSON.stringify({ url: currentUnfavoriteUrl })
                 })
-                if(req.ok){
+                if (req.ok) {
                     currentUnfavoriteElement.classList.remove("favorite")
-                    favoriteIcon.setAttribute("aria-pressed", 'false');
+                    currentUnfavoriteElement.setAttribute("aria-pressed", 'false');
+                    hideUnfavoriteModal()
                 }
             }
         }
-        hideUnfavoriteModal()
     })
 }
-
 
 if (cancelUnfavoriteButton) {
     cancelUnfavoriteButton.addEventListener("click", () => {
         hideUnfavoriteModal()
+    })
+}
+
+//Confirmar Logout
+const logoutModal = document.getElementById("logoutModal")
+const confirmLogoutButton = document.getElementById("confirmLogout")
+const cancelLogoutButton = document.getElementById("cancelLogout")
+const unsignButton = document.getElementById("unsign")
+
+if (unsignButton) {
+    unsignButton.addEventListener("click", (e) => {
+        e.preventDefault()
+        if (logoutModal) logoutModal.style.display = "flex"
+    })
+}
+
+if (logoutModal) {
+    logoutModal.addEventListener("click", (e) => {
+        if (e.target === logoutModal) {
+            logoutModal.style.display = "none"
+        }
+    })
+}
+
+if (confirmLogoutButton) {
+    confirmLogoutButton.addEventListener("click", () => {
+        localStorage.removeItem("token")
+        window.location.reload()
+    })
+}
+
+if (cancelLogoutButton) {
+    cancelLogoutButton.addEventListener("click", () => {
+        logoutModal.style.display = "none"
     })
 }
 
@@ -207,7 +242,6 @@ function obterIdUnicoMidia(url) {
             return `smd-${partes[partes.length - 1]}`;
         }
 
-        // 5. SCRIBD (Ex: /document/123456789/Titulo)
         if (hostname.includes("scribd.com")) {
             const match = pathname.match(/\/document\/(\d+)/);
             return match ? `scribd-${match[1]}` : pathname;
@@ -248,7 +282,7 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
             if (dices.statusCode === 500) {
                 console.log("Informe o erro ao responsável:", dices.message)
             }
-
+            clean("afterSearch")
             const idsProcessados = new Set();
             for (const key in dices.data) {
                 let resultBlock = document.createElement("div")
@@ -285,7 +319,6 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                 })
             }
             const showcases = document.querySelectorAll(".showcase")
-
             const token = localStorage.getItem("token")
             if (!token) {
                 clean("afterSearch")
@@ -354,8 +387,6 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
         catch (err) {
             showPopUp(err.message)
         }
-        clean("afterSearch")
-
     }
     else {
         showPopUp("Informe algum valor para realizar uma pesquisa!")
@@ -436,6 +467,8 @@ if (registerForm) {
         if (senha.length < 6) return showAuthError(registerForm, "A senha deve ter no mínimo 6 caracteres.")
         if (senha !== confirm) return showAuthError(registerForm, "As senhas não conferem.")
 
+        showPopUp("Processando dados...")
+
         try {
             const req = await fetch(`${url}/register`, {
                 method: "POST",
@@ -471,6 +504,8 @@ if (loginForm) {
 
         if (!email) return showAuthError(loginForm, "Preencha o email.")
         if (!senha) return showAuthError(loginForm, "Preencha a senha.")
+
+        showPopUp("Processando dados...")
 
         try {
             const req = await fetch(`${url}/login`, {

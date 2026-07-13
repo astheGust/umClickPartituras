@@ -62,6 +62,9 @@
 
   --loadingBorder: #fff;
 }
+.hidden {
+    display: none !important;
+}
 
 body {
   background: var(--bgLow);
@@ -683,11 +686,6 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
     width: 100%;
   }
 
-  .auth-section {
-    padding: 10px 20px;
-    justify-content: center;
-  }
-
   #lightMode {
     width: 40px;
     height: 28px;
@@ -698,28 +696,43 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
 }
 
 .auth-section {
+  position: absolute;
+  top: 12px;
+  right: 16px;
   display: flex;
-  justify-content: flex-end;
-  padding: 15px 30px;
-  background-color: var(--bgHigh);
-  border-bottom: 1px solid var(--borderColor);
-  gap: 10px;
   align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--bgHigh);
+  border: 1px solid var(--borderColor);
+  border-radius: 4px;
+  z-index: 100;
+  transition: background .2s, border-color .2s;
+}
+
+.auth-section .sign {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.auth-separator {
+  color: var(--titleText);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 0 2px;
 }
 
 .auth-link {
   color: var(--mainText);
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   transition: color 0.2s ease;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
 .auth-link:hover {
   color: #555;
-}
-
-.auth-separator {
-  color: var(--titleText);
-  font-size: 0.95rem;
 }

@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 API_KEY = os.getenv("SERP_API_KEY")
 
+#sites que entram na pesquisa
 allowed = [
     "musescore",
     "youtube",
@@ -41,15 +42,14 @@ def searchQuery(query, instrumentList):
                     "q": f"{query} {instrument} sheet",
                     "safe": "active",
                     "location": "Brazil",
-                    "hl": "pt",
+                    "hl": "pt-br",
                     "gl": "br",
                     "google_domain": "google.com.br",
                     "api_key": API_KEY,
-                    "num": "30"
                 })
+                #processa apenas 50 itens
                 imageResult = search.get_dict().get("images_results", [])[:50]
                 for result in imageResult:                    
-                    #link = result.get("link", "").lower()
                     source = result.get("source", "").lower()
                     image = result.get("thumbnail", "")
                     
@@ -69,14 +69,14 @@ def searchQuery(query, instrumentList):
                 "q": f"{query} sheet",
                 "safe": "active",
                 "location": "Brazil",
-                "hl": "pt",
+                "hl": "pt-br",
                 "gl": "br",
                 "google_domain": "google.com.br",
                 "api_key": API_KEY,
             })
+            #processa apenas 50 itens
             imageResult = search.get_dict().get("images_results", [])[:50]
             for result in imageResult:
-                #link = result.get("link", "").lower()
                 source = result.get("source", "").lower()
                 image = result.get("thumbnail", "")
                 
@@ -89,9 +89,7 @@ def searchQuery(query, instrumentList):
                                 sheets[site].append({
                                     "url": result.get("link"),
                                     "img": image
-                                })
-                            
+                                })            
+        return sheets                     
     except Exception as err:
         raise Exception("Erro na conexão com a API de busca:", err)
-        
-    return sheets

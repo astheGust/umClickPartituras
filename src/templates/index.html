@@ -17,9 +17,12 @@
 
 <body>
   <header class="auth-section">
-    <a href="/login" class="auth-link">Login</a>
-    <span class="auth-separator">/</span>
-    <a href="/register" class="auth-link">Registro</a>
+    <section class="sign">
+      <a href="/login" class="auth-link">Login</a>
+      <span class="auth-separator">/</span>
+      <a href="/register" class="auth-link">Registro</a>
+    </section>
+    <a id="unsign" class="auth-link">Sair</a>
   </header>
 
   <form>
@@ -79,6 +82,17 @@
       <div class="modal-actions">
         <button id="confirmUnfavorite" class="button-confirm">Sim, Desfavoritar</button>
         <button id="cancelUnfavorite" class="button-cancel">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="logoutModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2>Confirmar Saída</h2>
+      <p>Tem certeza de que deseja sair da sua conta?</p>
+      <div class="modal-actions">
+        <button id="confirmLogout" class="button-confirm">Sim, Sair</button>
+        <button id="cancelLogout" class="button-cancel">Cancelar</button>
       </div>
     </div>
   </div>
