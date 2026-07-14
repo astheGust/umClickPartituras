@@ -274,6 +274,7 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                 infoText.classList.add("infoMessage")
                 infoText.textContent = `Resultados Insuficientes para: ${dices.data["pesquisa"]}`
                 contentBlock.appendChild(infoText)
+                showPopUp("Tente adicionar ou remover elementos da pesquisa.")
                 clean("afterSearch")
                 return
             }
