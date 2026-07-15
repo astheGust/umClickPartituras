@@ -42,7 +42,6 @@ def authenticateToken(func):
             g.user = decoded
         except Exception as err:
             raise Exception("Token Inválido",err)
-
         return func()
     return verificar
 
@@ -187,6 +186,10 @@ def imgsLinks():
 #@app.route("/favorites",methods=["GET"])
 #def favoritesRoute():
 #    return render_template("favorites.html")
+
+@app.route("/favoritesPage")
+def favorites():
+    return render_template("favorites.html")
 
 @app.route("/favorites",methods=["POST"])
 @authenticateToken

@@ -5,13 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login — umClickPartituras</title>
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="/styles.css">
   <script>
     if (localStorage.getItem("mode")) {
       document.documentElement.classList.add("dark")
     }
   </script>
-  <script src="./logic.js" defer></script>
+  <script src="/logic.js" defer></script>
 </head>
 
 <body>
@@ -28,7 +28,8 @@
       <div class="authField">
         <label for="loginPassword">Senha</label>
         <div class="passwordWrapper">
-          <input id="loginPassword" name="password" type="password" placeholder="Sua senha" required autocomplete="current-password">
+          <input id="loginPassword" name="password" type="password" placeholder="Sua senha" required
+            autocomplete="current-password">
           <button type="button" class="togglePassword" aria-label="Mostrar senha">👁</button>
         </div>
       </div>
@@ -37,6 +38,10 @@
 
       <p class="authLink">
         Não tem conta? <a href="/register">Cadastre-se</a>
+      </p>
+
+      <p class="authLink">
+        <a class="authLink" href="/">Entrar sem Login</a>
       </p>
     </form>
   </div>

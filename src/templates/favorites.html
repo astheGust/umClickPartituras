@@ -6,11 +6,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minhas Músicas Favoritas</title>
     <link rel="stylesheet" href="/styles.css">
-    <script defer src="/logic.js"></script>
+    <script defer src="/logic.js">
+
+
+    </script>
 
 </head>
 
 <body>
+    <header class="nav-header">
+        <section class="sign" id="signSection">
+            <a href="/login" class="auth-link">Login</a>
+            <span class="auth-separator">/</span>
+            <a href="/register" class="auth-link">Registro</a>
+        </section>
+        <button class="diamond-btn" id="diamondBtn" aria-label="Menu">
+            <span class="diamond-letter">P</span>
+        </button>
+        <div class="nav-dropdown" id="navDropdown">
+            <div class="dropdown-items">
+                <div class="dropdown-row">
+                    <button class="mini-diamondBtn"></button>
+                    <a href="/" class="dropdown-link" id="navHome">Início</a>
+                </div>
+                <div class="dropdown-row">
+                    <button class="mini-diamondBtn"></button>
+                    <a class="dropdown-link" id="navLogout">Sair</a>
+                </div>
+            </div>
+        </div>
+    </header>
     <form>
         <label for="query">
             <input type="text" id="query" placeholder="Pesquise suas músicas favoritas...">
@@ -28,6 +53,17 @@
             <div class="modal-actions">
                 <button id="confirmUnfavorite" class="button-confirm">Sim, Remover</button>
                 <button id="cancelUnfavorite" class="button-cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="logoutModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Confirmar Saída</h2>
+            <p>Tem certeza de que deseja sair da sua conta?</p>
+            <div class="modal-actions">
+                <button id="confirmLogout" class="button-confirm">Sim, Sair</button>
+                <button id="cancelLogout" class="button-cancel">Cancelar</button>
             </div>
         </div>
     </div>

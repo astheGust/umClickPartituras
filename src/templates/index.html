@@ -11,18 +11,32 @@
       document.documentElement.classList.add("dark")
     }
   </script>
-  <script src="/logic.js" defer></script>
+  <script src="./logic.js" defer></script>
 
 </head>
 
 <body>
-  <header class="auth-section">
-    <section class="sign">
+  <header class="nav-header">
+    <section class="sign" id="signSection">
       <a href="/login" class="auth-link">Login</a>
       <span class="auth-separator">/</span>
       <a href="/register" class="auth-link">Registro</a>
     </section>
-    <a id="unsign" class="auth-link">Sair</a>
+    <button class="diamond-btn" id="diamondBtn" aria-label="Menu">
+      <span class="diamond-letter">P</span>
+    </button>
+    <div class="nav-dropdown" id="navDropdown">
+      <div class="dropdown-items">
+        <div class="dropdown-row">
+          <button class="mini-diamondBtn"></button>
+          <a class="dropdown-link" id="navFavorites">Favoritos</a>
+        </div>
+        <div class="dropdown-row">
+          <button class="mini-diamondBtn"></button>
+          <a class="dropdown-link" id="navLogout">Sair</a>
+        </div>
+      </div>
+    </div>
   </header>
 
   <form>

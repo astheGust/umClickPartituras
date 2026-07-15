@@ -62,8 +62,9 @@
 
   --loadingBorder: #fff;
 }
+
 .hidden {
-    display: none !important;
+  display: none !important;
 }
 
 body {
@@ -245,17 +246,17 @@ form label {
 
 
 @keyframes heart {
-    0% {
-        transform: scale(.8);
-    }
+  0% {
+    transform: scale(.8);
+  }
 
-    60% {
-        transform: scale(1.3);
-    }
+  60% {
+    transform: scale(1.3);
+  }
 
-    100% {
-        transform: scale(1);
-    }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .favIcon {
@@ -273,7 +274,12 @@ form label {
   border: none;
 }
 
-.favIcon.favorite {
+.favIcon.processing {
+  background-image: url("src/imgs/heartComplete.png");
+  animation: heart .3s ease;
+}
+
+.favIcon.favorite{
     background-image: url("src/imgs/heartComplete.png");
     animation: heart .3s ease;
 }
@@ -301,12 +307,6 @@ form label {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.score-img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
 }
 
 .showcase a {
@@ -368,6 +368,7 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
   font-size: 1rem;
   font-weight: 500;
   transition: background-color .2s, border-color .2s, color .2s;
+  z-index:9999;
 }
 
 .dark .popUpContainer {
@@ -384,8 +385,8 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Fundo semi-transparente */
-  backdrop-filter: blur(5px); /* Efeito de desfoque */
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
   z-index: 1001;
   justify-content: center;
   align-items: center;
@@ -427,7 +428,8 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
 }
 
 .modal-actions .button-confirm {
-  background-color: #dc3545; /* Vermelho para confirmar */
+  background-color: #dc3545;
+  /* Vermelho para confirmar */
   color: white;
 }
 
@@ -436,7 +438,8 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
 }
 
 .modal-actions .button-cancel {
-  background-color: #6c757d; /* Cinza para cancelar */
+  background-color: #6c757d;
+  /* Cinza para cancelar */
   color: white;
 }
 
@@ -605,85 +608,265 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
   color: #fca5a5;
 }
 
-@media (max-width: 768px) {
+/* =============================================
+   RESPONSIVO: dispositivos muito pequenos (até 480px)
+   Esconde filtros de instrumento, reduz tudo
+   ============================================= */
+@media (max-width: 480px) {
   form {
     flex-direction: column;
-    padding: 20px;
+    padding: 14px 10px;
+    gap: 8px;
+    min-height: auto;
   }
 
   #query {
     width: 100%;
-    max-width: 300px;
+    max-width: 100%;
+    height: 36px;
+    font-size: 0.85rem;
+    padding: 0 10px;
   }
 
   #send {
     width: 100%;
-    max-width: 300px;
+    max-width: 100%;
+    height: 36px;
+    font-size: 0.85rem;
   }
 
   #instrumentsFilter {
-    display: none;
+    display: none !important;
+  }
+
+  #filterText {
+    display: none !important;
+  }
+
+  #content {
+    padding: 14px 8px;
+    gap: 16px;
+  }
+
+  .source-title {
+    font-size: 0.62rem;
+    letter-spacing: 0.8px;
+  }
+
+  .result-block {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .showcase {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    padding: 10px;
+    border-radius: 3px;
+  }
+
+  .score-img {
+    max-height: 180px;
+    border-radius: 2px;
+  }
+
+  .favIcon {
+    width: 22px;
+    height: 22px;
+    bottom: 12px;
+    right: 12px;
+  }
+
+  .infoMessage {
+    font-size: 1.1rem;
+    text-indent: 4px;
+  }
+
+  .authForm {
+    padding: 20px 14px;
+    max-width: 100%;
+  }
+
+  .authTitle {
+    font-size: 1.15rem;
+  }
+
+  .authField input {
+    height: 38px;
+    font-size: 0.88rem;
+  }
+
+  .authSubmit {
+    height: 38px;
+    font-size: 0.9rem;
+  }
+
+  .authLink {
+    font-size: 0.8rem;
+  }
+
+  #lightMode {
+    width: 36px;
+    height: 26px;
+    bottom: 3%;
+    right: 3%;
+    font-size: 0.7rem;
+  }
+
+  .nav-header {
+    top: 8px;
+    right: 8px;
+  }
+
+  .nav-header .auth-link {
+    font-size: 0.78rem;
+  }
+
+  .nav-header .auth-separator {
+    font-size: 0.78rem;
+  }
+
+  .diamond-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .diamond-letter {
+    font-size: 0.8rem;
+  }
+
+  .dropdown-link {
+    font-size: 0.85rem;
+  }
+
+  .popUpContainer {
+    font-size: 0.82rem;
+    padding: 10px 14px;
+    bottom: 12px;
+    max-width: 90vw;
+    text-align: center;
+  }
+
+  .modal-content {
+    padding: 20px 16px;
+    max-width: 90%;
+  }
+
+  .modal-content h2 {
+    font-size: 1.1rem;
+  }
+
+  .modal-content p {
+    font-size: 0.85rem;
+  }
+
+  .modal-actions button {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    margin: 0 4px;
+  }
+
+  .authContainer {
+    padding: 12px;
+    min-height: 100vh;
+  }
+}
+
+/* =============================================
+   RESPONSIVO: tablets e telas médias (481px – 768px)
+   Filtros visíveis mas reorganizados
+   ============================================= */
+@media (min-width: 481px) and (max-width: 768px) {
+  form {
+    flex-direction: column;
+    padding: 20px 16px;
+    gap: 10px;
+  }
+
+  #query {
+    width: 100%;
+    max-width: 400px;
+    height: 38px;
+  }
+
+  #send {
+    width: 100%;
+    max-width: 400px;
+    height: 38px;
+  }
+
+  #instrumentsFilter {
     position: static;
     width: 100%;
+    max-width: 400px;
     height: auto;
-    margin-top: 20px;
-    padding-left: 0;
+    margin-top: 12px;
   }
 
   #instrumentsBox {
     flex-direction: row;
     flex-wrap: wrap;
     height: auto;
-    justify-content: center;
-    gap: 10px;
+    justify-content: flex-start;
+    gap: 8px 16px;
+    font-size: 0.85rem;
   }
 
   #filterText {
     position: static;
-    text-align: center;
-    margin-top: 10px;
+    text-align: left;
+    margin-top: 4px;
+    font-size: 0.78rem;
     left: auto;
+    max-width: 400px;
   }
 
   #content {
     padding: 20px 16px;
-    gap: 20px;
+    gap: 24px;
+  }
+
+  .source-title {
+    font-size: 0.68rem;
   }
 
   .result-block {
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
   }
 
   .showcase {
-    width: 100%;
-    max-width: 300px;
+    width: calc(50% - 12px);
+    max-width: 220px;
     height: auto;
     padding: 12px;
   }
 
   .score-img {
-    width: 100%;
-    height: 100%;
-    max-width: none;
     max-height: 200px;
   }
 
   .favIcon {
-    bottom: 15px;
-    right: 15px;
+    width: 24px;
+    height: 24px;
+    bottom: 14px;
+    right: 14px;
+  }
+
+  .infoMessage {
+    font-size: 1.3rem;
   }
 
   .authForm {
-    padding: 24px 20px;
+    padding: 28px 24px;
+    max-width: 360px;
   }
 
   .authTitle {
     font-size: 1.3rem;
-  }
-
-  .authField {
-    width: 100%;
   }
 
   #lightMode {
@@ -693,46 +876,244 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
     right: 2%;
     font-size: 0.8rem;
   }
+
+  .nav-header {
+    top: 10px;
+    right: 14px;
+  }
+
+  .nav-header .auth-link,
+  .nav-header .auth-separator {
+    font-size: 0.85rem;
+  }
+
+  .diamond-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .diamond-letter {
+    font-size: 0.9rem;
+  }
+
+  .modal-content {
+    max-width: 380px;
+    padding: 24px;
+  }
 }
 
-.auth-section {
+/* =============================================
+   RESPONSIVO: telas médias/grandes (769px – 1024px)
+   Ajustes leves de espaçamento
+   ============================================= */
+@media (min-width: 769px) and (max-width: 1024px) {
+  form {
+    padding: 28px 20px;
+    gap: 10px;
+  }
+
+  #query {
+    width: 300px;
+  }
+
+  #instrumentsFilter {
+    left: 14px;
+    width: 220px;
+  }
+
+  #filterText {
+    left: calc(50vw - (440px/2));
+    font-size: 0.8rem;
+  }
+
+  #content {
+    padding: 30px 24px;
+    gap: 30px;
+    max-width: 960px;
+  }
+
+  .showcase {
+    width: 220px;
+    height: 270px;
+    padding: 14px;
+  }
+
+  .infoMessage {
+    font-size: 1.4rem;
+  }
+
+  .authForm {
+    max-width: 380px;
+  }
+
+  #lightMode {
+    bottom: 3%;
+    right: 2%;
+  }
+}
+
+/* =============================================
+   RESPONSIVO: telas grandes (acima de 1400px)
+   Aproveita melhor o espaço horizontal
+   ============================================= */
+@media (min-width: 1400px) {
+  #content {
+    max-width: 1600px;
+  }
+
+  .showcase {
+    width: 280px;
+    height: 340px;
+  }
+}
+
+/* ---- Nav Diamond Dropdown ---- */
+
+.nav-header {
   position: absolute;
-  top: 12px;
-  right: 16px;
+  top: 14px;
+  right: 18px;
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  background: var(--bgHigh);
-  border: 1px solid var(--borderColor);
-  border-radius: 4px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0;
   z-index: 100;
-  transition: background .2s, border-color .2s;
 }
 
-.auth-section .sign {
+/* ---- sign fallback (login/register) ---- */
+
+.nav-header .sign {
   display: flex;
   align-items: center;
   gap: 2px;
+  padding: 8px 0;
 }
 
-.auth-separator {
+.nav-header .auth-link {
+  color: var(--mainText);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: color .15s ease;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.nav-header .auth-link:hover {
+  color: #666;
+}
+
+.nav-header .auth-separator {
   color: var(--titleText);
   font-weight: 600;
   font-size: 0.9rem;
   margin: 0 2px;
 }
 
-.auth-link {
+.diamond-btn {
+  width: 38px;
+  height: 38px;
+  background: var(--bgHigh);
+  border: 1.5px solid var(--mainText);
+  transform: rotate(-45deg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background .2s, border-color .2s, box-shadow .15s;
+  position: relative;
+  z-index: 2;
+}
+
+.diamond-btn:hover {
+  background: var(--mainText);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, .06);
+}
+
+.diamond-btn:hover .diamond-letter {
+  color: var(--bgHigh);
+}
+
+.diamond-letter {
+  display: block;
+  transform: rotate(45deg);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--mainText);
+  line-height: 1;
+  transition: color .2s;
+}
+
+.nav-dropdown {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition: opacity .18s ease, transform .18s ease;
+}
+
+.nav-dropdown.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* ---- dropdown rows (mini-diamond + link) ---- */
+
+.dropdown-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mini-diamondBtn {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  background: var(--bgHigh);
+  border: 1px solid var(--mainText);
+  transform: rotate(-45deg);
+  opacity: 0;
+  padding: 0;
+  transition: opacity .16s ease .08s, transform .16s ease .08s, background .2s, border-color .2s;
+}
+
+
+
+.nav-dropdown.open .mini-diamondBtn {
+  opacity: 1;
+  transform: rotate(-45deg);
+}
+
+.dropdown-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity .16s ease .08s, transform .16s ease .08s;
+}
+
+.nav-dropdown.open .dropdown-items {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.dropdown-link {
   color: var(--mainText);
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.9rem;
-  transition: color 0.2s ease;
+  font-size: 1rem;
   white-space: nowrap;
   cursor: pointer;
+  transition: color .15s ease;
 }
 
-.auth-link:hover {
-  color: #555;
+.dropdown-link:hover {
+  color: #666;
 }

@@ -17,14 +17,6 @@ allowed = [
     "mymusicsheet"
     ]
 
-
-from serpapi import GoogleSearch
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-API_KEY = os.getenv("SERP_API_KEY")
-
 def duplicado(link_atual, lista_do_site):
     for item in lista_do_site:
         if item["url"] == link_atual:

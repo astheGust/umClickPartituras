@@ -1,20 +1,46 @@
 let url = ""
-if(window.location.href.includes("https")){
-    url ="https://umclickpartituras.onrender.com"
-}else{
-    url ="http://127.0.0.1:5000"
+if (window.location.href.includes("https")) {
+    url = "https://umclickpartituras.onrender.com"
+} else {
+    url = "http://127.0.0.1:5000"
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-    if (localStorage.getItem("mode")) {
-        document.getElementById("lightMode").innerText = "Light"
-    }
-    if (localStorage.getItem("token")) {
-        document.querySelector(".sign").classList.add("hidden")
-        document.querySelector("#unsign").classList.remove("hidden")
+
+    const mode = localStorage.getItem("mode")
+    const token = localStorage.getItem("token")
+    const isFavoritesPage = window.location.href.includes("/favorites")
+    const signSection = document.getElementById("signSection")
+    const diamondBtn = document.getElementById("diamondBtn")
+    const navDropdown = document.getElementById("navDropdown")
+    const navFavorites = document.getElementById("navFavorites")
+    const navHome = document.getElementById("navHome")
+    const navLogout = document.getElementById("navLogout")
+
+    if (mode) {
+        document.getElementById("lightMode").innerText = "Dark"
+        document.documentElement.classList.add("dark")
     } else {
-        document.querySelector(".sign").classList.remove("hidden")
-        document.querySelector("#unsign").classList.add("hidden")
+        document.documentElement.classList.remove("dark")
+    }
+    if (token) {
+        if (signSection) signSection.classList.add("hidden")
+        if (diamondBtn) diamondBtn.classList.remove("hidden")
+        if (navLogout) navLogout.classList.remove("hidden")
+
+        if (isFavoritesPage && navHome) {
+            navHome.classList.remove("hidden")
+        }
+        if (!isFavoritesPage && navFavorites) {
+            navFavorites.classList.remove("hidden")
+        }
+    } else {
+        if (signSection) signSection.classList.remove("hidden")
+        if (diamondBtn) diamondBtn.classList.add("hidden")
+        if (navDropdown) navDropdown.classList.add("hidden")
+        if (navLogout) navLogout.classList.add("hidden")
+        if (navFavorites) navFavorites.classList.add("hidden")
+        if (navHome) navHome.classList.add("hidden")
     }
 })
 
@@ -84,6 +110,7 @@ if (unfavoriteModal) {
 if (confirmUnfavoriteButton) {
     confirmUnfavoriteButton.addEventListener("click", async () => {
         if (currentUnfavoriteUrl && currentUnfavoriteElement) {
+            showPopUp("Processando...")
             let token = localStorage.getItem("token")
             if (token) {
                 let req = await fetch(`${url}/favorites`, {
@@ -95,9 +122,10 @@ if (confirmUnfavoriteButton) {
                     body: JSON.stringify({ url: currentUnfavoriteUrl })
                 })
                 if (req.ok) {
-                    currentUnfavoriteElement.classList.remove("favorite")
+                    currentUnfavoriteElement.classList.remove("favorite, processing")
                     currentUnfavoriteElement.setAttribute("aria-pressed", 'false');
                     hideUnfavoriteModal()
+                    if (window.location.href.includes("favoritesPage")) { window.location.reload() }
                 }
             }
         }
@@ -114,7 +142,7 @@ if (cancelUnfavoriteButton) {
 const logoutModal = document.getElementById("logoutModal")
 const confirmLogoutButton = document.getElementById("confirmLogout")
 const cancelLogoutButton = document.getElementById("cancelLogout")
-const unsignButton = document.getElementById("unsign")
+const unsignButton = document.getElementById("navLogout")
 
 if (unsignButton) {
     unsignButton.addEventListener("click", (e) => {
@@ -146,67 +174,82 @@ if (cancelLogoutButton) {
 
 
 //EM DESENVOLVIMENTO
+if (window.location.href.includes("/favoritesPage")) {
+    document.addEventListener("DOMContentLoaded", async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            window.location.href = "/login";
+            return;
+        }
 
-//document.addEventListener("DOMContentLoaded", async () => {
-//    const token = localStorage.getItem("token");
-//    if (!token) {
-//        window.location.href = "/login";
-//        return;
-//    }
-//
-//    const contentBlock = document.getElementById("content");
-//    const loading = document.getElementById("loading");
-//
-//    loading.style.display = "block";
-//
-//    try {
-//        const response = await fetch(`${urlDebug}/checkFavorites`, {
-//            method: "GET",
-//            headers: {
-//                "Authorization": `Bearer ${token}`
-//            }
-//        });
-//
-//        const data = await response.json();
-//
-//        if (response.ok) {
-//            if (data.favoritos && data.favoritos.length > 0) {
-//                data.favoritos.forEach(dices => {
-//                    let sheetUrl = dices[0]
-//                    let imgHref = dices[1]
-//                    let showcase = document.createElement("div");
-//                    let link = document.createElement("a");
-//                    link.setAttribute("target", "_blank");
-//                    let img = document.createElement("img");
-//                    let favoriteIcon = document.createElement("div");
-//                    favoriteIcon.classList.add("favIcon", "favorite");
-//                    favoriteIcon.setAttribute("aria-pressed", "true");
-//                    showcase.classList.add("showcase");
-//                    img.classList.add("score-img");
-//                    img.src = imgHref
-//                    link.href = sheetUrl;
-//                    link.setAttribute("data-url", url);
-//                    link.appendChild(img);
-//                    showcase.appendChild(link);
-//                    showcase.appendChild(favoriteIcon);
-//                    contentBlock.appendChild(showcase);
-//
-//                    favoriteIcon.addEventListener("click", (e) => {
-//                        showUnfavoriteModal(sheetUrl, e.target);
-//                    });
-//                });
-//            } else {
-//                contentBlock.innerHTML = "<p class=\"infoMessage\">Você ainda não tem músicas favoritas.</p>";
-//            }
-//        } else {
-//            contentBlock.innerHTML = `<p class=\"infoMessage\">Erro ao carregar favoritos: ${data.message || 'Desconhecido'}</p>`;
-//        }
-//    } catch (error) {
-//        contentBlock.innerHTML = `<p class=\"infoMessage\">Ocorreu um erro: ${error.message}</p>`;
-//    } finally {
-//        loading.style.display = "none";
-//    }
-//});
+        const contentBlock = document.getElementById("content");
+        const loading = document.getElementById("loading");
+
+        loading.style.display = "block";
+
+        try {
+            const response = await fetch(`${url}/checkFavorites`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                if (data.favoritos && data.favoritos.length > 0) {
+                    data.favoritos.forEach(dices => {
+                        let sheetUrl = dices[0]
+                        let imgHref = dices[1]
+                        let showcase = document.createElement("div");
+                        let link = document.createElement("a");
+                        link.setAttribute("target", "_blank");
+                        let img = document.createElement("img");
+                        let favoriteIcon = document.createElement("div");
+                        favoriteIcon.classList.add("favIcon", "favorite");
+                        favoriteIcon.setAttribute("aria-pressed", "true");
+                        showcase.classList.add("showcase");
+                        img.classList.add("score-img");
+                        img.src = imgHref
+                        link.href = sheetUrl;
+                        link.setAttribute("data-url", url);
+                        link.appendChild(img);
+                        showcase.appendChild(link);
+                        showcase.appendChild(favoriteIcon);
+                        contentBlock.appendChild(showcase);
+
+                        favoriteIcon.addEventListener("click", (e) => {
+                            showUnfavoriteModal(sheetUrl, e.target);
+                        });
+                    });
+                } else {
+                    contentBlock.innerHTML = "<p class=\"infoMessage\">Você ainda não tem músicas favoritas.</p>";
+                }
+            } else if (response.statusCode === 403) {
+                contentBlock.innerHTML = `<p class=\"infoMessage\">Erro no registro! tente relogar</p>`;
+            } else {
+                contentBlock.innerHTML = `<p class=\"infoMessage\">Erro no servidor, por favor tente novamente em alguns minutos</p>`;
+            }
+        } catch (error) {
+            contentBlock.innerHTML = `<p class=\"infoMessage\">Ocorreu um erro: ${error.message}</p>`;
+        } finally {
+            loading.style.display = "none";
+        }
+    });
+}
+
+const allowed = [
+    "musescore",
+    "youtube",
+    "musicnotes",
+    "sheetmusicdirect",
+    "sheetmusicplus",
+    "scribd",
+    "lasolsheet",
+    "tomplay",
+    "mymusicsheet"
+]
 
 // Lógica para pegar musica unica
 function obterIdUnicoMidia(url) {
@@ -279,7 +322,8 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                 return
             }
             if (dices.statusCode === 500) {
-                console.log("Informe o erro ao responsável:", dices.message)
+                showPopUp("Erro, por favor tente novamente em alguns minutos!")
+                return
             }
             clean("afterSearch")
             const idsProcessados = new Set();
@@ -355,10 +399,10 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                         }
 
                         favoriteIcon.addEventListener("click", async (e) => {
-                            try {
-                                if (e.target.getAttribute("aria-pressed") !== 'true') {
-                                    e.target.classList.toggle("favorite");
-                                    e.target.setAttribute("aria-pressed", 'true')
+                            if (e.target.getAttribute("aria-pressed") !== 'true') {
+                                e.target.classList.add("processing");
+                                e.target.setAttribute("aria-pressed", 'true')
+                                try {
                                     if (token) {
                                         let postReq = await fetch(`${url}/favorites`, {
                                             method: "POST",
@@ -368,15 +412,16 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                                             },
                                             body: JSON.stringify({ url: sheetUrl, href: imgSrc })
                                         })
-
-                                        let postRes = await postReq.json()
+                                        if (postReq.ok) {
+                                            showPopUp("Partitura Favoritada!")
+                                            e.target.classList.add("favorite");
+                                        }
                                     }
-                                } else {
-                                    showUnfavoriteModal(sheetUrl, e.target)
+                                } catch (err) {
+                                    showPopUp(err)
                                 }
-                            }
-                            catch (err) {
-                                showPopUp(err.message)
+                            } else {
+                                showUnfavoriteModal(sheetUrl, e.target)
                             }
                         })
                     })
@@ -548,4 +593,34 @@ function showAuthError(form, message) {
     error.className = "authError"
     error.textContent = message
     form.insertBefore(error, form.querySelector(".authSubmit"))
+}
+
+// ---- Diamond Nav Toggle ----
+
+const diamondBtn = document.getElementById("diamondBtn")
+const navDropdown = document.getElementById("navDropdown")
+
+if (diamondBtn && navDropdown) {
+    diamondBtn.addEventListener("click", (e) => {
+        e.stopPropagation()
+        navDropdown.classList.toggle("open")
+    })
+
+    document.addEventListener("click", (e) => {
+        if (!navDropdown.contains(e.target) && e.target !== diamondBtn) {
+            navDropdown.classList.remove("open")
+        }
+    })
+}
+
+const navFavorites = document.getElementById("navFavorites")
+
+if (navFavorites) {
+    navFavorites.addEventListener("click", async (e) => {
+        e.preventDefault()
+        let token = localStorage.getItem("token")
+        if (token) {
+            window.location = `${url}/favoritesPage`
+        }
+    })
 }
