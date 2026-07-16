@@ -122,10 +122,10 @@ if (confirmUnfavoriteButton) {
                     body: JSON.stringify({ url: currentUnfavoriteUrl })
                 })
                 if (req.ok) {
-                    currentUnfavoriteElement.classList.remove("favorite, processing")
+                    currentUnfavoriteElement.classList.remove("favorite,processing")
                     currentUnfavoriteElement.setAttribute("aria-pressed", 'false');
                     hideUnfavoriteModal()
-                    if (window.location.href.includes("favoritesPage")) { window.location.reload() }
+                    if (window.location.href.includes("favoritesPage")){window.location.reload() }
                 }
             }
         }
