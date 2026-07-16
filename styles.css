@@ -608,8 +608,43 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
   color: #fca5a5;
 }
 
+/* ---- Site Footer (GitHub / LinkedIn) ---- */
+
+.site-footer {
+  position: fixed;
+  bottom: 8px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.site-footer a {
+  color: var(--titleText);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: .3px;
+  transition: color .2s;
+}
+
+.site-footer a:hover {
+  color: var(--mainText);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer-sep {
+  color: var(--titleText);
+  opacity: .45;
+  font-size: 0.7rem;
+  margin: 0 4px;
+  user-select: none;
+}
+
 /* =============================================
-   RESPONSIVO: dispositivos muito pequenos (até 480px)
+   dispositivos (até 480px)
    Esconde filtros de instrumento, reduz tudo
    ============================================= */
 @media (max-width: 480px) {
