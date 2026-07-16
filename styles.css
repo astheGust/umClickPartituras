@@ -621,7 +621,7 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
 }
 
 .site-footer a {
-  color: var(--titleText);
+  color: var(--mainText);
   text-decoration: none;
   font-size: 0.75rem;
   font-weight: 600;
@@ -630,7 +630,7 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
 }
 
 .site-footer a:hover {
-  color: var(--mainText);
+  color: var(--tittleText);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -638,7 +638,7 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
 .footer-sep {
   color: var(--titleText);
   opacity: .45;
-  font-size: 0.7rem;
+  font-size: 0.7r
   margin: 0 4px;
   user-select: none;
 }
