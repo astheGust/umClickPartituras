@@ -35,15 +35,23 @@ def authenticateToken(func):
     @wraps(func)
     def verificar():
         authHeader = request.headers.get("Authorization")
-        token = authHeader.split(" ")[1]
-        if (not token): return jsonify({"message":"Token não encontrado"}),403
-        try:
-            decoded = jwt.decode(token,JWT_SECRET,algorithms="HS256")
-            g.user = decoded
-        except Exception as err:
-            raise Exception("Token Inválido",err)
-        return func()
+        if(authHeader):           
+            token = authHeader.split(" ")[1]
+            if (not token): return jsonify({"message":"Token não encontrado"}),404
+            elif(token):
+                try:
+                    decoded = jwt.decode(token,JWT_SECRET,algorithms="HS256")
+                    g.user = decoded
+                    
+                except jwt.ExpiredSignatureError:
+                    return jsonify({"message":"Token expirado!"}),401
+                except Exception as err:
+                    raise Exception("Erro ao validar o token",err)
+                return func()
+        else:
+            return jsonify({"message":"AuthHeader vazio"}),403
     return verificar
+        
 
 
 @app.route("/register")
@@ -103,12 +111,16 @@ def loginAccount():
 
     if(verificado == 0): return jsonify({"verificado":False,"message":"Usuário não verificado!"})
     passCompare = comparePassword(userPass, hashPass)
-    if(not passCompare):return jsonify({"message":"senha incorreta!"}),404
-    token = jwt.encode({
+    if(not passCompare):return jsonify({"message":"senha incorreta!"}),401
+    acessToken = jwt.encode({
             "userId":user_id,
             "exp":datetime.now(timezone.utc) + timedelta(days=7)
-            },JWT_SECRET,algorithm="HS256")
-    return jsonify({"message":"Token de Autenticação enviado!","success":True,"token":token}),200
+            },JWT_SECRET,algorithm="HS256");
+    refreshToken = jwt.encode({
+            "userId":user_id,
+            "exp":datetime.now(timezone.utc) + timedelta(days=30)
+            },JWT_SECRET,algorithm="HS256");
+    return jsonify({"message":"Token de Autenticação enviado!","success":True,"acessToken":acessToken,"refreshToken":refreshToken}),200
 
 @app.route("/verify-email")
 def verifyEmail():
@@ -147,11 +159,10 @@ def confirmEmail():
 
 @app.route("/images",methods=["GET"])
 def imgsLinks():
-
     query = request.args.get("q","")
     filter = request.args.get("filter","")
     instruments = filter.split(",")
-    if not query: return jsonify({"err":"Pesquisa Vazia"}),400
+    if not query or query == "": return jsonify({"err":"Pesquisa Vazia"}),400
     try:
         sheets = searchQuery(query,instruments)
     except Exception as err:
@@ -178,14 +189,8 @@ def imgsLinks():
             "statusCode": 404,
             "dado": sheets
         }), 404
-#
+
 #Rotas Protegidas:
-
-#EM DESENVOLVIMENTO
-
-#@app.route("/favorites",methods=["GET"])
-#def favoritesRoute():
-#    return render_template("favorites.html")
 
 @app.route("/favoritesPage")
 def favorites():
@@ -263,8 +268,6 @@ def removeFavorite():
             'statusCode':500
         }), 500
 
-#EM DESENVOLVIMENTO
-
 @app.route("/checkFavorites",methods=["GET"])
 @authenticateToken
 def checkFavorites():
@@ -275,7 +278,7 @@ def checkFavorites():
             if(len(rows) !=0):
                 return jsonify({"favoritos":rows}),200
             else:
-                return jsonify({"message":"NADA AQUI"})
+                return jsonify({"favoritos":[],"message":"NADA AQUI"}),200
         except Exception as err:
             return jsonify({
             "success":False,
@@ -285,21 +288,27 @@ def checkFavorites():
     else:
         return jsonify({"message":"error"}),404
         
-@app.route("/health",methods=["GET"])
-def heathCheck():
-    try:
-        sqlSelect("SELECT user_id FROM usuarios WHERE user_id = %s",["2"])
-        return jsonify({
-                "success": True,
-                "message": "API e Banco de Dados estão ONLINE!"
-            }), 200
-        
-    except Exception as err:
-        return jsonify({
-            "success": False,
-            "message": "API online, mas o Banco de Dados falhou!",
-            "error": str(err)
-        }), 500
+@app.route("/token",methods=["POST"])
+def refreshAcesstoken():
+    data = request.json
+    refToken = data["token"]
+    if(refToken != ""):
+        try:
+            decoded = jwt.decode(refToken,JWT_SECRET,algorithms=["HS256"])
+            user = decoded.get("userId")
+            acessToken = jwt.encode({
+                    "userId":user,
+                    "exp":datetime.now(timezone.utc) + timedelta(days=7)
+                    },JWT_SECRET,algorithm="HS256");
+            refreshToken = jwt.encode({
+                    "userId":user,
+                    "exp":datetime.now(timezone.utc) + timedelta(days=30)
+                    },JWT_SECRET,algorithm="HS256");
+            return jsonify({"message":"Novo token fornecido!","success":True,"acessToken":acessToken,"refreshToken":refreshToken}),200
+        except jwt.ExpiredSignatureError:
+            return jsonify({"message":"Token expirado!"}),401
+        except Exception as err:
+            raise Exception({"Erro ao validar o token",err})
         
 if __name__ == '__main__':
     app.run(debug=True)

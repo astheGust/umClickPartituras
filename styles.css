@@ -630,7 +630,6 @@ a partir daqui tudo foi criado com IA, para acelerar o desenvolvimento
 }
 
 .site-footer a:hover {
-  color: var(--titleText);
   text-decoration: underline;
   text-underline-offset: 3px;
 }

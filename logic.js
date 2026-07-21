@@ -8,7 +8,7 @@ if (window.location.href.includes("https")) {
 window.addEventListener("DOMContentLoaded", () => {
 
     const mode = localStorage.getItem("mode")
-    const token = localStorage.getItem("token")
+    const token = localStorage.getItem("acessToken")
     const isFavoritesPage = window.location.href.includes("/favorites")
     const signSection = document.getElementById("signSection")
     const diamondBtn = document.getElementById("diamondBtn")
@@ -44,6 +44,21 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 })
 
+let active = !!localStorage.getItem("mode")
+document.getElementById("lightMode").addEventListener("click", () => {
+    active = !active
+    document.documentElement.classList.toggle("dark")
+    if (active) {
+        document.getElementById("lightMode").innerText = "Light"
+        localStorage.setItem("mode", active)
+    }
+    else {
+        document.getElementById("lightMode").innerText = "Dark"
+        localStorage.removeItem("mode")
+
+    }
+
+})
 
 const loading = document.getElementById("loading")
 const dice = document.getElementById("query")
@@ -79,6 +94,65 @@ function showPopUp(message) {
         popUp.remove()
     }, 3000)
 }
+
+//pedir um novo token
+
+async function fetchComAuth(url, options = {}) {
+    let token = localStorage.getItem("acessToken");
+    options.headers = {
+        ...options.headers,
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+    };
+
+    let response = await fetch(url, options);
+
+    if (response.status === 401) {
+        const renovou = await newToken();
+
+        if (renovou) {
+            token = localStorage.getItem("acessToken");
+            options.headers["Authorization"] = `Bearer ${token}`;
+            response = await fetch(url, options);
+        }
+    }
+
+    return response;
+}
+
+const newToken = async () => {
+    let token = localStorage.getItem("refreshToken")
+    if (token) {
+        try {
+            let req = await fetch(`${url}/token`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token })
+            })
+            if (req.status === 401) {
+                alert("Sua sessão expirou. Por favor, faça login novamente.");
+                window.location.href = "/login";
+                return false;
+            }
+            else if (req.ok) {
+                let data = await req.json()
+                let acessToken = data.acessToken
+                let refreshToken = data.refreshToken
+                if (acessToken && refreshToken) {
+                    localStorage.setItem("acessToken", acessToken)
+                    localStorage.setItem("refreshToken", refreshToken)
+                    return true
+                }
+            }
+            return false
+        } catch (err) {
+            showPopUp("Erro em processar seu login, por favor tente relogar") //erro na tratativa junto ao JWT
+            return false
+        }
+    }
+    return false
+}
+
 //desfavoritar partituras
 const unfavoriteModal = document.getElementById("unfavoriteModal")
 const confirmUnfavoriteButton = document.getElementById("confirmUnfavorite")
@@ -111,22 +185,15 @@ if (confirmUnfavoriteButton) {
     confirmUnfavoriteButton.addEventListener("click", async () => {
         if (currentUnfavoriteUrl && currentUnfavoriteElement) {
             showPopUp("Processando...")
-            let token = localStorage.getItem("token")
-            if (token) {
-                let req = await fetch(`${url}/favorites`, {
-                    method: "DELETE",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-type": "application/json"
-                    },
-                    body: JSON.stringify({ url: currentUnfavoriteUrl })
-                })
-                if (req.ok) {
-                    currentUnfavoriteElement.classList.remove("favorite,processing")
-                    currentUnfavoriteElement.setAttribute("aria-pressed", 'false');
-                    hideUnfavoriteModal()
-                    if (window.location.href.includes("favoritesPage")){window.location.reload() }
-                }
+            let req = await fetchComAuth(`${url}/favorites`, {
+                method: "DELETE",
+                body: JSON.stringify({ url: currentUnfavoriteUrl })
+            })
+            if (req.ok) {
+                currentUnfavoriteElement.classList.remove("favorite,processing")
+                currentUnfavoriteElement.setAttribute("aria-pressed", 'false');
+                hideUnfavoriteModal()
+                if (window.location.href.includes("favoritesPage")) { window.location.reload() }
             }
         }
     })
@@ -161,7 +228,8 @@ if (logoutModal) {
 
 if (confirmLogoutButton) {
     confirmLogoutButton.addEventListener("click", () => {
-        localStorage.removeItem("token")
+        localStorage.removeItem("acessToken")
+        localStorage.removeItem("refreshToken")
         window.location.reload()
     })
 }
@@ -172,11 +240,9 @@ if (cancelLogoutButton) {
     })
 }
 
-
-//EM DESENVOLVIMENTO
 if (window.location.href.includes("/favoritesPage")) {
     document.addEventListener("DOMContentLoaded", async () => {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("acessToken");
         if (!token) {
             window.location.href = "/login";
             return;
@@ -188,11 +254,8 @@ if (window.location.href.includes("/favoritesPage")) {
         loading.style.display = "block";
 
         try {
-            const response = await fetch(`${url}/checkFavorites`, {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
+            const response = await fetchComAuth(`${url}/checkFavorites`, {
+                method: "GET"
             });
 
             const data = await response.json();
@@ -223,10 +286,10 @@ if (window.location.href.includes("/favoritesPage")) {
                             showUnfavoriteModal(sheetUrl, e.target);
                         });
                     });
-                } else {
+                } else if (response.status === 204) {
                     contentBlock.innerHTML = "<p class=\"infoMessage\">Você ainda não tem músicas favoritas.</p>";
                 }
-            } else if (response.statusCode === 403) {
+            } else if (response.status === 404) {
                 contentBlock.innerHTML = `<p class=\"infoMessage\">Erro no registro! tente relogar</p>`;
             } else {
                 contentBlock.innerHTML = `<p class=\"infoMessage\">Erro no servidor, por favor tente novamente em alguns minutos</p>`;
@@ -362,7 +425,7 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                 })
             }
             const showcases = document.querySelectorAll(".showcase")
-            const token = localStorage.getItem("token")
+            const token = localStorage.getItem("acessToken")
             if (!token) {
                 clean("afterSearch")
                 showcases.forEach(swhocase => {
@@ -374,13 +437,9 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                 return showPopUp("Considere fazer seu login para poder favoritar")
             }
             if (showcases.length > 0) {
-                let req = await fetch(`${url}/checkFavorites`, {
+                let req = await fetchComAuth(`${url}/checkFavorites`, {
                     method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                    }
                 })
-
                 if (req.ok) {
                     const res = await req.json()
                     const favoritosIds = (res.favoritos || []).map(([url,]) => obterIdUnicoMidia(url));
@@ -403,19 +462,16 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                                 e.target.classList.add("processing");
                                 e.target.setAttribute("aria-pressed", 'true')
                                 try {
-                                    if (token) {
-                                        let postReq = await fetch(`${url}/favorites`, {
-                                            method: "POST",
-                                            headers: {
-                                                "Authorization": `Bearer ${token}`,
-                                                "Content-type": "application/json"
-                                            },
-                                            body: JSON.stringify({ url: sheetUrl, href: imgSrc })
-                                        })
-                                        if (postReq.ok) {
-                                            showPopUp("Partitura Favoritada!")
-                                            e.target.classList.add("favorite");
-                                        }
+                                    let postReq = await fetchComAuth(`${url}/favorites`, {
+                                        method: "POST",
+                                        body: JSON.stringify({ url: sheetUrl, href: imgSrc })
+                                    })
+                                    if (postReq.ok) {
+                                        showPopUp("Partitura Favoritada!")
+                                        e.target.classList.add("favorite");
+                                    } else {
+                                        showPopUp("Tente novamente em alguns segundos")
+                                        return
                                     }
                                 } catch (err) {
                                     showPopUp(err)
@@ -425,6 +481,8 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
                             }
                         })
                     })
+                } else if (req.status === 500) {
+                    showPopUp("Erro no servidor, tente novamente em alguns segundos")
                 }
             }
         }
@@ -437,23 +495,6 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
     }
 
 })
-
-let active = !!localStorage.getItem("mode")
-document.getElementById("lightMode").addEventListener("click", () => {
-    active = !active
-    document.documentElement.classList.toggle("dark")
-    if (active) {
-        document.getElementById("lightMode").innerText = "Light"
-        localStorage.setItem("mode", active)
-    }
-    else {
-        document.getElementById("lightMode").innerText = "Dark"
-        localStorage.removeItem("mode")
-
-    }
-
-})
-
 
 if (instrumentsCheckbox.length > 0) {
     instrumentsCheckbox.forEach((checkBox) => {
@@ -478,7 +519,7 @@ if (instrumentsCheckbox.length > 0) {
 }
 
 // =============================================
-// a partir daqui a estrutura foi criada com IA, para acelerar o desenvolvimento
+// a partir daqui alguns códigos foram revisados juntamente de um agente de Ia
 // =============================================
 
 // ---- Auth Pages: toggle password visibility ----
@@ -571,8 +612,9 @@ if (loginForm) {
                 })
                 return showPopUp("Usuario não verificado, enviando novo email de verificação")
             }
-            if (res.success) {
-                localStorage.setItem("token", res.token)
+            if (res.success && res.success !== false) {
+                localStorage.setItem("acessToken", res.acessToken)
+                localStorage.setItem("refreshToken", res.refreshToken)
                 showPopUp("Redirecionando...")
                 window.location.href = "/"
             } else {
@@ -618,7 +660,7 @@ const navFavorites = document.getElementById("navFavorites")
 if (navFavorites) {
     navFavorites.addEventListener("click", async (e) => {
         e.preventDefault()
-        let token = localStorage.getItem("token")
+        let token = localStorage.getItem("acessToken")
         if (token) {
             window.location = `${url}/favoritesPage`
         }

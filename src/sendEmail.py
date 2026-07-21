@@ -1,5 +1,5 @@
 import os
-
+import json
 from dotenv import load_dotenv
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
@@ -63,5 +63,21 @@ Verificar Conta
         return True
 
     except ApiException as err:
-        print(err)
-        raise
+            try:
+                #Extrai o erro
+                body = json.loads(err.body)
+                error_message = body.get("message", "Erro desconhecido")
+                error_code = body.get("code", "")
+            except Exception:
+                error_message = str(err)
+                error_code = ""
+            #valida que tipo de erro é
+            if err.status == 400 or "invalid" in error_message.lower() or "blacklisted" in error_code.lower():
+                return {
+                    "status": "invalid_email",
+                    "message": f"O e-mail '{destinatario}' não é válido ou não pode receber mensagens."
+                }
+            return {
+                "status": "error",
+                "message": f"Erro ao enviar o e-mail: {error_message}"
+            }
