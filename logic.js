@@ -153,8 +153,111 @@ const newToken = async () => {
     return false
 }
 
+// ---- Modal de Favoritar com Anotação ----
+
+let currentFavoriteUrl = null
+let currentFavoriteImg = null
+let currentFavoriteElement = null
+let favoriteAnnotation = ""
+
+const favoriteModal = document.getElementById("favoriteModal")
+const confirmFavoriteButton = document.getElementById("confirmFavorite")
+const cancelFavoriteButton = document.getElementById("cancelFavorite")
+const favoriteAnnotationInput = document.getElementById("favoriteAnnotation")
+const annotationCounter = document.getElementById("annotationCounter")
+const favoriteProcessing = document.getElementById("favoriteProcessing")
+const logoutProcessing = document.getElementById("logoutProcessing")
+const annotationBlock = document.getElementById("annotationBlock")
+
+function showFavoriteModal(sheetUrl, imgSrc, element) {
+    currentFavoriteUrl = sheetUrl
+    currentFavoriteImg = imgSrc
+    currentFavoriteElement = element
+    favoriteAnnotation = ""
+    if (favoriteAnnotationInput) favoriteAnnotationInput.value = ""
+    if (annotationCounter) annotationCounter.textContent = "0/80"
+    if (favoriteModal) favoriteModal.style.display = "flex"
+}
+
+function hideFavoriteModal() {
+    if (favoriteModal) favoriteModal.style.display = "none"
+    currentFavoriteUrl = null
+    currentFavoriteImg = null
+    currentFavoriteElement = null
+    favoriteAnnotation = ""
+    if (favoriteProcessing) favoriteProcessing.style.display = "none"
+    if (confirmFavoriteButton) confirmFavoriteButton.style.display = ""
+    if (cancelFavoriteButton) cancelFavoriteButton.style.display = ""
+    if (annotationBlock) annotationBlock.style.display = ""
+}
+
+if (favoriteAnnotationInput) {
+    favoriteAnnotationInput.addEventListener("input", () => {
+        const len = favoriteAnnotationInput.value.length
+        if (annotationCounter) annotationCounter.textContent = `${len}/80`
+        favoriteAnnotation = favoriteAnnotationInput.value
+    })
+}
+
+if (favoriteModal) {
+    favoriteModal.addEventListener("click", (e) => {
+        if (e.target === favoriteModal) {
+            hideFavoriteModal()
+        }
+    })
+}
+
+if (confirmFavoriteButton) {
+    confirmFavoriteButton.addEventListener("click", async () => {
+        if (!currentFavoriteUrl || !currentFavoriteElement) return
+        if (confirmFavoriteButton) confirmFavoriteButton.style.display = "none"
+        if (cancelFavoriteButton) cancelFavoriteButton.style.display = "none"
+        if (annotationBlock) annotationBlock.style.display = "none"
+        if (favoriteProcessing) favoriteProcessing.style.display = "block"
+        currentFavoriteElement.classList.add("processing")
+        if (favoriteModal) favoriteModal.style.display = "none"
+        const annotationText = favoriteAnnotation ? favoriteAnnotation.trim() : "";
+        showPopUp("Favoritando...")
+        console.log(annotationText)
+        try {
+            let postReq = await fetchComAuth(`${url}/favorites`, {
+                method: "POST",
+                body: JSON.stringify({
+                    url: currentFavoriteUrl,
+                    href: currentFavoriteImg,
+                    annotation: annotationText
+                })
+            })
+            if (postReq.ok) {
+                showPopUp("Partitura Favoritada!")
+                currentFavoriteElement.classList.remove("processing")
+                void currentFavoriteElement.offsetWidth;
+                currentFavoriteElement.classList.add("favorite")
+                currentFavoriteElement.setAttribute("aria-pressed", 'true')
+            } else {
+                showPopUp("Tente novamente em alguns segundos")
+                currentFavoriteElement.classList.remove("favorite")
+                currentFavoriteElement.setAttribute("aria-pressed", 'false')
+            }
+        } catch (err) {
+            showPopUp(err)
+            currentFavoriteElement.classList.remove("favorite")
+            currentFavoriteElement.setAttribute("aria-pressed", 'false')
+        }
+        hideFavoriteModal()
+    })
+}
+
+if (cancelFavoriteButton) {
+    cancelFavoriteButton.addEventListener("click", () => {
+        hideFavoriteModal()
+    })
+}
+
 //desfavoritar partituras
 const unfavoriteModal = document.getElementById("unfavoriteModal")
+const unfavoriteModalText = document.getElementById("unfavoriteModalText")
+const unfavoriteProcessing = document.getElementById("unfavoriteProcessing")
 const confirmUnfavoriteButton = document.getElementById("confirmUnfavorite")
 const cancelUnfavoriteButton = document.getElementById("cancelUnfavorite")
 
@@ -168,9 +271,13 @@ function showUnfavoriteModal(url, element) {
 }
 
 function hideUnfavoriteModal() {
-    unfavoriteModal.style.display = "none"
+    if (unfavoriteModal) unfavoriteModal.style.display = "none"
     currentUnfavoriteUrl = null
     currentUnfavoriteElement = null
+    if (unfavoriteProcessing) unfavoriteProcessing.style.display = "none"
+    if (confirmUnfavoriteButton) confirmUnfavoriteButton.style.display = ""
+    if (cancelUnfavoriteButton) cancelUnfavoriteButton.style.display = ""
+    if (unfavoriteModalText) unfavoriteModalText.style.display = ""
 }
 
 if (unfavoriteModal) {
@@ -184,17 +291,34 @@ if (unfavoriteModal) {
 if (confirmUnfavoriteButton) {
     confirmUnfavoriteButton.addEventListener("click", async () => {
         if (currentUnfavoriteUrl && currentUnfavoriteElement) {
-            showPopUp("Processando...")
-            let req = await fetchComAuth(`${url}/favorites`, {
-                method: "DELETE",
-                body: JSON.stringify({ url: currentUnfavoriteUrl })
-            })
-            if (req.ok) {
-                currentUnfavoriteElement.classList.remove("favorite,processing")
-                currentUnfavoriteElement.setAttribute("aria-pressed", 'false');
-                hideUnfavoriteModal()
-                if (window.location.href.includes("favoritesPage")) { window.location.reload() }
+            if (confirmUnfavoriteButton) confirmUnfavoriteButton.style.display = "none"
+            if (cancelUnfavoriteButton) cancelUnfavoriteButton.style.display = "none"
+            if (unfavoriteModalText) unfavoriteModalText.style.display = "none"
+            if (unfavoriteProcessing) unfavoriteProcessing.style.display = "block"
+            setTimeout(() => {
+                if (unfavoriteModal) unfavoriteModal.style.display = "none"
+                showPopUp("A página será recarregada!")
+            }, 1500)
+            try {
+                let req = await fetchComAuth(`${url}/favorites`, {
+                    method: "DELETE",
+                    body: JSON.stringify({ url: currentUnfavoriteUrl })
+                })
+                if (req.ok) {
+                    currentUnfavoriteElement.classList.remove("favorite")
+                    currentUnfavoriteElement.setAttribute("aria-pressed", 'false');
+                    if (window.location.href.includes("favoritesPage")) window.location.reload()
+                } else {
+                    showPopUp("Tente novamente em alguns segundos")
+                    currentUnfavoriteElement.classList.add("favorite")
+                    currentUnfavoriteElement.setAttribute("aria-pressed", 'true');
+                }
+            } catch (err) {
+                showPopUp(err)
+                currentUnfavoriteElement.classList.add("favorite")
+                currentUnfavoriteElement.setAttribute("aria-pressed", 'true')
             }
+            hideUnfavoriteModal()
         }
     })
 }
@@ -204,6 +328,7 @@ if (cancelUnfavoriteButton) {
         hideUnfavoriteModal()
     })
 }
+
 
 //Confirmar Logout
 const logoutModal = document.getElementById("logoutModal")
@@ -228,6 +353,9 @@ if (logoutModal) {
 
 if (confirmLogoutButton) {
     confirmLogoutButton.addEventListener("click", () => {
+        if (confirmLogoutButton) confirmLogoutButton.style.display = "none"
+        if (cancelLogoutButton) cancelLogoutButton.style.display = "none"
+        if (logoutProcessing) logoutProcessing.style.display = "block"
         localStorage.removeItem("acessToken")
         localStorage.removeItem("refreshToken")
         window.location.reload()
@@ -257,14 +385,18 @@ if (window.location.href.includes("/favoritesPage")) {
             const response = await fetchComAuth(`${url}/checkFavorites`, {
                 method: "GET"
             });
-
             const data = await response.json();
-
-            if (response.ok) {
+            if (response.ok && data.favoritos.length == 0) {
+                contentBlock.innerHTML = "<p class=\"infoMessage\">Você ainda não tem músicas favoritas.</p>";
+            } else if (response.ok && data.favoritos.length != 0) {
+                console.log(data.favoritos)
                 if (data.favoritos && data.favoritos.length > 0) {
                     data.favoritos.forEach(dices => {
                         let sheetUrl = dices[0]
                         let imgHref = dices[1]
+                        let annotation = dices[2]
+                        let wrapper = document.createElement("div")
+                        wrapper.classList.add("favorite-item")
                         let showcase = document.createElement("div");
                         let link = document.createElement("a");
                         link.setAttribute("target", "_blank");
@@ -280,14 +412,59 @@ if (window.location.href.includes("/favoritesPage")) {
                         link.appendChild(img);
                         showcase.appendChild(link);
                         showcase.appendChild(favoriteIcon);
-                        contentBlock.appendChild(showcase);
+
+                        if (annotation && annotation.trim() !== "") {
+                            let annotationToggle = document.createElement("button")
+                            annotationToggle.classList.add("annotation-toggle")
+                            annotationToggle.textContent = "Anotações"
+
+                            let annotationTooltip = document.createElement("div")
+                            annotationTooltip.classList.add("annotation-tooltip")
+                            annotationTooltip.textContent = annotation
+
+                            let hideTimeout = null
+
+                            annotationToggle.addEventListener("click", () => {
+                                if (annotationTooltip.classList.contains("visible")) {
+                                    annotationTooltip.classList.remove("visible")
+                                    if (hideTimeout) clearTimeout(hideTimeout)
+                                    return
+                                }
+                                document.querySelectorAll(".annotation-tooltip.visible").forEach(t => t.classList.remove("visible"))
+                                annotationTooltip.classList.add("visible")
+                            })
+
+                            annotationTooltip.addEventListener("mouseenter", () => {
+                                if (hideTimeout) clearTimeout(hideTimeout)
+                            })
+
+                            annotationTooltip.addEventListener("mouseleave", () => {
+                                hideTimeout = setTimeout(() => {
+                                    annotationTooltip.classList.remove("visible")
+                                }, 1500)
+                            })
+
+                            annotationToggle.addEventListener("mouseleave", () => {
+                                hideTimeout = setTimeout(() => {
+                                    annotationTooltip.classList.remove("visible")
+                                }, 1500)
+                            })
+
+                            annotationToggle.addEventListener("mouseenter", () => {
+                                if (hideTimeout) clearTimeout(hideTimeout)
+                            })
+
+                            showcase.appendChild(annotationToggle)
+                            showcase.appendChild(annotationTooltip)
+                        }
+
+                        wrapper.appendChild(showcase);
+                        contentBlock.appendChild(wrapper);
 
                         favoriteIcon.addEventListener("click", (e) => {
                             showUnfavoriteModal(sheetUrl, e.target);
                         });
                     });
-                } else if (response.status === 204) {
-                    contentBlock.innerHTML = "<p class=\"infoMessage\">Você ainda não tem músicas favoritas.</p>";
                 }
             } else if (response.status === 404) {
                 contentBlock.innerHTML = `<p class=\"infoMessage\">Erro no registro! tente relogar</p>`;
@@ -459,23 +636,7 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
 
                         favoriteIcon.addEventListener("click", async (e) => {
                             if (e.target.getAttribute("aria-pressed") !== 'true') {
-                                e.target.classList.add("processing");
-                                e.target.setAttribute("aria-pressed", 'true')
-                                try {
-                                    let postReq = await fetchComAuth(`${url}/favorites`, {
-                                        method: "POST",
-                                        body: JSON.stringify({ url: sheetUrl, href: imgSrc })
-                                    })
-                                    if (postReq.ok) {
-                                        showPopUp("Partitura Favoritada!")
-                                        e.target.classList.add("favorite");
-                                    } else {
-                                        showPopUp("Tente novamente em alguns segundos")
-                                        return
-                                    }
-                                } catch (err) {
-                                    showPopUp(err)
-                                }
+                                showFavoriteModal(sheetUrl, imgSrc, e.target)
                             } else {
                                 showUnfavoriteModal(sheetUrl, e.target)
                             }
@@ -605,12 +766,23 @@ if (loginForm) {
             })
             const res = await req.json()
             if (res.verificado || res.verificado === false) {
-                await fetch(`${url}/sendEmail`, {
-                    method: "POST",
-                    headers: { "Content-type": "application/json" },
-                    body: JSON.stringify({ email })
-                })
-                return showPopUp("Usuario não verificado, enviando novo email de verificação")
+                try {
+                    let sendEmail = await fetch(`${url}/sendEmail`, {
+                        method: "POST",
+                        headers: { "Content-type": "application/json" },
+                        body: JSON.stringify({ email })
+                    })
+                    if (sendEmail.ok) {
+                        return showPopUp("Usuario não verificado, enviando novo email de verificação")
+                    }
+                    else if (sendEmail.status === 404) {
+                        showPopUp(sendEmail.message)
+                        return
+                    }
+                } catch (err) {
+                    showPopUp("Erro inesperado: ", err)
+                }
+
             }
             if (res.success && res.success !== false) {
                 localStorage.setItem("acessToken", res.acessToken)

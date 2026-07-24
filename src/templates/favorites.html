@@ -43,20 +43,22 @@
         <button type="submit" id="send">Buscar</button>
     </form>
     <div id="loading"></div>
-    <div id="content"></div>
+    <div id="content" style="flex-direction: row;"></div>
     <button id="lightMode">Dark</button>
 
     <div id="unfavoriteModal" class="modal-overlay">
         <div class="modal-content">
-            <h2>Desfavoritar Partitura</h2>
-            <p>Tem certeza de que deseja remover esta partitura dos seus favoritos?</p>
+            <span class="modal-text" id="unfavoriteModalText">
+                <h2>Confirmar Desfavoritar</h2>
+                <p>Tem certeza de que deseja remover esta partitura dos seus favoritos?</p>
+            </span>
             <div class="modal-actions">
-                <button id="confirmUnfavorite" class="button-confirm">Sim, Remover</button>
+                <button id="confirmUnfavorite" class="button-confirm">Sim, Desfavoritar</button>
                 <button id="cancelUnfavorite" class="button-cancel">Cancelar</button>
+                <span class="processing" id="unfavoriteProcessing">Processando...</span>
             </div>
         </div>
     </div>
-
     <div id="logoutModal" class="modal-overlay">
         <div class="modal-content">
             <h2>Confirmar Saída</h2>

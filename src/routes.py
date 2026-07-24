@@ -71,8 +71,11 @@ def registerAccount():
                 "exp":datetime.now(timezone.utc) + timedelta(minutes=10)
                     },JWT_SECRET,algorithm="HS256")
             link = f"{rota}/verify-email?token={token}"
-            enviarEmail(userEmail,link)
-            return jsonify({"message":"Usuário cadastrado com sucesso! Verifique seu Email!"}),200
+            mensagem = enviarEmail(userEmail,link)
+            if(mensagem == True):
+                return jsonify({"message":"Usuário cadastrado com sucesso! Verifique seu Email!"}),200
+            elif isinstance(mensagem,dict):
+                return jsonify({"message":"Erro ao tentar enviar o E-mail", "err":mensagem.err})
         except Exception as err:
             return jsonify({ #erro nas funções enviarEmail e sql
             "success": False,
@@ -156,6 +159,9 @@ def confirmEmail():
             "success": False,
             "message": str(err)
         }), 500
+    else:
+        return jsonify({"message":"Erro referente a verificação do email!"}),404
+
 
 @app.route("/images",methods=["GET"])
 def imgsLinks():
@@ -202,6 +208,7 @@ def postFavorites():
     data = request.json
     url = data.get("url")
     imgHref = data.get("href")
+    annotation = data.get("annotation")
     results = sqlSelect("SELECT sheet_id,image_url FROM partituras WHERE url = %s",[url])
     user = g.user["userId"]
     if(len(results) == 0):
@@ -222,11 +229,9 @@ def postFavorites():
                 sqlQuery("INSERT INTO partituras(site,url,image_url) VALUES(%s,%s,%s)",[source,url,imgHref])
             else:
                 sqlQuery("INSERT INTO partituras(url) VALUES(%s)",[url])
-
+                
             sheet_id = sqlSelect("SELECT sheet_id FROM partituras WHERE url = %s",[url])[0][0]
-
-            sqlQuery("INSERT INTO usuarios_favoritos(user_id,sheet_id) VALUES(%s,%s)",[user,sheet_id])
-            
+            sqlQuery("INSERT INTO usuarios_favoritos(user_id,sheet_id,anotacoes) VALUES(%s,%s,%s)",[user,sheet_id,annotation])
         except Exception as err:
             return jsonify({ #erro nas funções sql
             "success": False,
@@ -257,11 +262,10 @@ def removeFavorite():
         try:
             results = sqlSelect("SElECT sheet_id FROM partituras WHERE url = %s",[unfavoriteUrl])
             sheet_id = results[0][0]
-
             sqlQuery("DELETE FROM usuarios_favoritos WHERE user_id = %s AND sheet_id = %s",[id_user,sheet_id])
-
             return jsonify({"message":"Url retirada dos favoritos do Usuário"})
         except Exception as err:
+            print(err)
             return jsonify({ #erro nas funções sql
             "success":False,
             "message": str(err),
@@ -274,12 +278,13 @@ def checkFavorites():
     id_user = g.user["userId"]
     if(id_user):
         try:
-            rows = sqlSelect("SELECT partituras.url,partituras.image_url FROM usuarios_favoritos JOIN partituras ON usuarios_favoritos.sheet_id = partituras.sheet_id WHERE usuarios_favoritos.user_id = %s",[id_user])
+            rows = sqlSelect("SELECT partituras.url,partituras.image_url,usuarios_favoritos.anotacoes FROM usuarios_favoritos JOIN partituras ON usuarios_favoritos.sheet_id = partituras.sheet_id WHERE usuarios_favoritos.user_id = %s",[id_user])
             if(len(rows) !=0):
                 return jsonify({"favoritos":rows}),200
             else:
-                return jsonify({"favoritos":[],"message":"NADA AQUI"}),200
+                return jsonify({"favoritos":[],"message":"Nada encontrado"}),200
         except Exception as err:
+            print(err)
             return jsonify({
             "success":False,
             "message": str(err),

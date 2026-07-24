@@ -83,24 +83,41 @@
   <p id="filterText" class=""></p>
 
   <div id="loading"></div>
-  
-  <article id="content">
 
-  </article>
+  <article id="content" style="flex-direction: column;"></article>
 
   <button id="lightMode">Dark</button>
 
-  <div id="unfavoriteModal" class="modal-overlay">
+  <div id="favoriteModal" class="modal-overlay">
     <div class="modal-content">
-      <h2>Confirmar Desfavoritar</h2>
-      <p>Tem certeza de que deseja remover esta partitura dos seus favoritos?</p>
+      <h2>Adicionar aos favoritos</h2>
+      <div id="annotationBlock">
+        <p>Gostaria de adicionar alguma anotação junto a esta partitura?</p>
+        <textarea id="favoriteAnnotation" class="annotation-textarea" maxlength="80"
+          placeholder="Ex: &quot;Refrão em Dó maior&quot; (opcional)"></textarea>
+        <small id="annotationCounter" class="annotation-counter">0/80</small>
+      </div>
       <div class="modal-actions">
-        <button id="confirmUnfavorite" class="button-confirm">Sim, Desfavoritar</button>
-        <button id="cancelUnfavorite" class="button-cancel">Cancelar</button>
+        <button id="confirmFavorite" class="button-favorite">Adicionar aos favoritos</button>
+        <button id="cancelFavorite" class="button-cancel">Mudei de ideia</button>
+        <span class="processing" id="favoriteProcessing">Processando...</span>
       </div>
     </div>
   </div>
 
+  <div id="unfavoriteModal" class="modal-overlay">
+    <div class="modal-content">
+      <span class="modal-text" id="unfavoriteModalText">
+        <h2>Confirmar Desfavoritar</h2>
+        <p>Tem certeza de que deseja remover esta partitura dos seus favoritos?</p>
+      </span>
+      <div class="modal-actions">
+        <button id="confirmUnfavorite" class="button-confirm">Sim, Desfavoritar</button>
+        <button id="cancelUnfavorite" class="button-cancel">Cancelar</button>
+        <span class="processing" id="unfavoriteProcessing">Processando...</span>
+      </div>
+    </div>
+  </div>
   <div id="logoutModal" class="modal-overlay">
     <div class="modal-content">
       <h2>Confirmar Saída</h2>
@@ -108,6 +125,7 @@
       <div class="modal-actions">
         <button id="confirmLogout" class="button-confirm">Sim, Sair</button>
         <button id="cancelLogout" class="button-cancel">Cancelar</button>
+        <span class="processing" id="logoutProcessing">Processando...</span>
       </div>
     </div>
   </div>
