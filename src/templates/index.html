@@ -33,6 +33,10 @@
         </div>
         <div class="dropdown-row">
           <button class="mini-diamondBtn"></button>
+          <a class="dropdown-link" id="navPassword">Mudar senha</a>
+        </div>
+        <div class="dropdown-row">
+          <button class="mini-diamondBtn"></button>
           <a class="dropdown-link" id="navLogout">Sair</a>
         </div>
       </div>
@@ -126,6 +130,36 @@
         <button id="confirmLogout" class="button-confirm">Sim, Sair</button>
         <button id="cancelLogout" class="button-cancel">Cancelar</button>
         <span class="processing" id="logoutProcessing">Processando...</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="changePasswordModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2>Mudar Senha</h2>
+      <p>Digite sua senha:</p>
+      <div class="currentPassword">
+        <label for="currentPassword"></label>
+        <div class="passwordWrapper">
+          <input type="password" id="currentPassword" class="password-input" placeholder="Senha atual">
+          <button type="button" class="togglePassword" aria-label="Mostrar senha">👁</button>
+        </div>
+      </div>
+      <p>Digite sua nova senha:</p>
+      <div class="password-fields">
+        <div class="passwordWrapper">
+          <input type="password" id="newPassword" class="password-input" placeholder="Nova senha">
+          <button type="button" class="togglePassword" aria-label="Mostrar senha">👁</button>
+        </div>
+        <div class="passwordWrapper">
+          <input type="password" id="confirmNewPassword" class="password-input" placeholder="Confirmar nova senha">
+          <button type="button" class="togglePassword" aria-label="Mostrar senha">👁</button>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="confirmChangePassword" class="button-confirm-change">Confirmar mudança</button>
+        <button id="cancelChangePassword" class="button-cancel">Cancelar</button>
+        <span class="processing" id="changePasswordProcessing">Processando...</span>
       </div>
     </div>
   </div>

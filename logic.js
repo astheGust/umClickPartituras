@@ -16,6 +16,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const navFavorites = document.getElementById("navFavorites")
     const navHome = document.getElementById("navHome")
     const navLogout = document.getElementById("navLogout")
+    const navPassword = document.getElementById("navPassword")
 
     if (mode) {
         document.getElementById("lightMode").innerText = "Dark"
@@ -34,6 +35,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (!isFavoritesPage && navFavorites) {
             navFavorites.classList.remove("hidden")
         }
+        if (navPassword) navPassword.classList.remove("hidden")
     } else {
         if (signSection) signSection.classList.remove("hidden")
         if (diamondBtn) diamondBtn.classList.add("hidden")
@@ -41,6 +43,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (navLogout) navLogout.classList.add("hidden")
         if (navFavorites) navFavorites.classList.add("hidden")
         if (navHome) navHome.classList.add("hidden")
+        if (navPassword) navPassword.classList.add("hidden")
     }
 })
 
@@ -55,9 +58,7 @@ document.getElementById("lightMode").addEventListener("click", () => {
     else {
         document.getElementById("lightMode").innerText = "Dark"
         localStorage.removeItem("mode")
-
     }
-
 })
 
 const loading = document.getElementById("loading")
@@ -153,7 +154,6 @@ const newToken = async () => {
     return false
 }
 
-// ---- Modal de Favoritar com Anotação ----
 
 let currentFavoriteUrl = null
 let currentFavoriteImg = null
@@ -177,6 +177,9 @@ function showFavoriteModal(sheetUrl, imgSrc, element) {
     if (favoriteAnnotationInput) favoriteAnnotationInput.value = ""
     if (annotationCounter) annotationCounter.textContent = "0/80"
     if (favoriteModal) favoriteModal.style.display = "flex"
+    if (confirmFavoriteButton) confirmFavoriteButton.style.display = ""
+    if (cancelFavoriteButton) cancelFavoriteButton.style.display = ""
+    if (annotationBlock) annotationBlock.style.display = ""
 }
 
 function hideFavoriteModal() {
@@ -186,9 +189,6 @@ function hideFavoriteModal() {
     currentFavoriteElement = null
     favoriteAnnotation = ""
     if (favoriteProcessing) favoriteProcessing.style.display = "none"
-    if (confirmFavoriteButton) confirmFavoriteButton.style.display = ""
-    if (cancelFavoriteButton) cancelFavoriteButton.style.display = ""
-    if (annotationBlock) annotationBlock.style.display = ""
 }
 
 if (favoriteAnnotationInput) {
@@ -207,45 +207,46 @@ if (favoriteModal) {
     })
 }
 
-if (confirmFavoriteButton) {
-    confirmFavoriteButton.addEventListener("click", async () => {
-        if (!currentFavoriteUrl || !currentFavoriteElement) return
-        if (confirmFavoriteButton) confirmFavoriteButton.style.display = "none"
-        if (cancelFavoriteButton) cancelFavoriteButton.style.display = "none"
-        if (annotationBlock) annotationBlock.style.display = "none"
-        if (favoriteProcessing) favoriteProcessing.style.display = "block"
-        currentFavoriteElement.classList.add("processing")
-        if (favoriteModal) favoriteModal.style.display = "none"
-        const annotationText = favoriteAnnotation ? favoriteAnnotation.trim() : "";
-        showPopUp("Favoritando...")
-        console.log(annotationText)
-        try {
-            let postReq = await fetchComAuth(`${url}/favorites`, {
-                method: "POST",
-                body: JSON.stringify({
-                    url: currentFavoriteUrl,
-                    href: currentFavoriteImg,
-                    annotation: annotationText
-                })
+async function processarFavorito(urlItem, imgItem, anotacao, heartElement) {
+    heartElement.classList.add("processing");
+    try {
+        let response = await fetchComAuth(`${url}/favorites`, {
+            method: "POST",
+            body: JSON.stringify({
+                url: urlItem,
+                href: imgItem,
+                annotation: anotacao
             })
-            if (postReq.ok) {
-                showPopUp("Partitura Favoritada!")
-                currentFavoriteElement.classList.remove("processing")
-                void currentFavoriteElement.offsetWidth;
-                currentFavoriteElement.classList.add("favorite")
-                currentFavoriteElement.setAttribute("aria-pressed", 'true')
-            } else {
-                showPopUp("Tente novamente em alguns segundos")
-                currentFavoriteElement.classList.remove("favorite")
-                currentFavoriteElement.setAttribute("aria-pressed", 'false')
-            }
-        } catch (err) {
-            showPopUp(err)
-            currentFavoriteElement.classList.remove("favorite")
-            currentFavoriteElement.setAttribute("aria-pressed", 'false')
+        });
+        if (response.ok) {
+            heartElement.classList.remove("processing");
+            void heartElement.offsetWidth;
+            heartElement.classList.add("favorite");
+            heartElement.setAttribute("aria-pressed", "true");
+            showPopUp("Partitura favoritada!");
+        } else {
+            throw new Error("Erro na resposta do servidor");
         }
-        hideFavoriteModal()
-    })
+    } catch (err) {
+        showPopUp("Erro ao favoritar. Tente novamente.");
+        heartElement.classList.remove("processing");
+        heartElement.setAttribute("aria-pressed", "false");
+    }
+}
+
+if (confirmFavoriteButton) {
+    confirmFavoriteButton.addEventListener("click", () => {
+        if (!currentFavoriteUrl || !currentFavoriteElement) return;
+
+        const urlParaEnviar = currentFavoriteUrl;
+        const imgParaEnviar = currentFavoriteImg;
+        const elementoParaAnimar = currentFavoriteElement;
+        const anotacaoTexto = favoriteAnnotationInput ? favoriteAnnotationInput.value.trim() : "";
+
+        hideFavoriteModal();
+
+        processarFavorito(urlParaEnviar, imgParaEnviar, anotacaoTexto, elementoParaAnimar);
+    });
 }
 
 if (cancelFavoriteButton) {
@@ -297,7 +298,7 @@ if (confirmUnfavoriteButton) {
             if (unfavoriteProcessing) unfavoriteProcessing.style.display = "block"
             setTimeout(() => {
                 if (unfavoriteModal) unfavoriteModal.style.display = "none"
-                showPopUp("A página será recarregada!")
+                if (window.location.href.includes("/favorites")) showPopUp("Recarregando Página...")
             }, 1500)
             try {
                 let req = await fetchComAuth(`${url}/favorites`, {
@@ -326,6 +327,108 @@ if (confirmUnfavoriteButton) {
 if (cancelUnfavoriteButton) {
     cancelUnfavoriteButton.addEventListener("click", () => {
         hideUnfavoriteModal()
+    })
+}
+
+//Mudar senha
+
+const changePasswordModal = document.getElementById("changePasswordModal")
+const navPasswordLink = document.getElementById("navPassword")
+const confirmChangePasswordBtn = document.getElementById("confirmChangePassword")
+const cancelChangePasswordBtn = document.getElementById("cancelChangePassword")
+const currentPasswordInput = document.getElementById("currentPassword")
+const newPasswordInput = document.getElementById("newPassword")
+const confirmNewPasswordInput = document.getElementById("confirmNewPassword")
+const changePasswordProcessing = document.getElementById("changePasswordProcessing")
+
+if (navPasswordLink) {
+    navPasswordLink.addEventListener("click", (e) => {
+        e.preventDefault()
+        if (changePasswordModal) {
+            resetChangePasswordModal()
+            changePasswordModal.style.display = "flex"
+        }
+    })
+}
+
+function resetChangePasswordModal() {
+    if (currentPasswordInput) currentPasswordInput.value = ""
+    if (newPasswordInput) newPasswordInput.value = ""
+    if (confirmNewPasswordInput) confirmNewPasswordInput.value = ""
+    if (confirmChangePasswordBtn) confirmChangePasswordBtn.style.display = ""
+    if (cancelChangePasswordBtn) cancelChangePasswordBtn.style.display = ""
+    if (changePasswordProcessing) changePasswordProcessing.style.display = "none"
+}
+
+function hideChangePasswordModal() {
+    if (changePasswordModal) changePasswordModal.style.display = "none"
+    resetChangePasswordModal()
+}
+
+if (changePasswordModal) {
+    changePasswordModal.addEventListener("click", (e) => {
+        if (e.target === changePasswordModal) {
+            hideChangePasswordModal()
+        }
+    })
+}
+
+if (confirmChangePasswordBtn) {
+    confirmChangePasswordBtn.addEventListener("click", async () => {
+        const senhaAtual = currentPasswordInput ? currentPasswordInput.value : ""
+        const novaSenha = newPasswordInput ? newPasswordInput.value : ""
+        const confirmarSenha = confirmNewPasswordInput ? confirmNewPasswordInput.value : ""
+
+        if (!novaSenha) {
+            showPopUp("Por favor, digite a nova senha.")
+            return
+        }
+
+        if (novaSenha !== confirmarSenha) {
+            showPopUp("As senhas não são iguais.")
+            return
+        }
+
+        if (confirmChangePasswordBtn) confirmChangePasswordBtn.style.display = "none"
+        if (cancelChangePasswordBtn) cancelChangePasswordBtn.style.display = "none"
+        if (changePasswordProcessing) changePasswordProcessing.style.display = "block"
+
+        try {
+            const response = await fetchComAuth(`${url}/changePassword`, {
+                method: "PATCH",
+                body: JSON.stringify({ current: senhaAtual, newPassword: novaSenha })
+            })
+
+            if (response.ok) {
+                showPopUp("Senha alterada com sucesso!")
+                hideChangePasswordModal()
+            }
+            else if (response.status === 400) {
+                hideChangePasswordModal()
+                showPopUp("Erro! tente novamente em alguns instantes")
+            }
+            else if (response.status === 401) {
+                showPopUp("Senha atual não correspondente")
+                if (changePasswordProcessing) changePasswordProcessing.style.display = "none"
+            }
+            else {
+                showPopUp("Erro ao alterar a senha. Tente novamente.")
+                if (confirmChangePasswordBtn) confirmChangePasswordBtn.style.display = ""
+                if (cancelChangePasswordBtn) cancelChangePasswordBtn.style.display = ""
+                if (changePasswordProcessing) changePasswordProcessing.style.display = "none"
+            }
+        } catch (err) {
+            showPopUp("Erro de conexão. Tente novamente.")
+            if (confirmChangePasswordBtn) confirmChangePasswordBtn.style.display = ""
+            if (cancelChangePasswordBtn) cancelChangePasswordBtn.style.display = ""
+            if (changePasswordProcessing) changePasswordProcessing.style.display = "none"
+        }
+    })
+}
+
+if (cancelChangePasswordBtn) {
+    cancelChangePasswordBtn.addEventListener("click", () => {
+        hideChangePasswordModal()
     })
 }
 
@@ -657,6 +760,8 @@ if (sendBtn) sendBtn.addEventListener("click", async (e) => {
 
 })
 
+
+
 if (instrumentsCheckbox.length > 0) {
     instrumentsCheckbox.forEach((checkBox) => {
         checkBox.addEventListener("click", () => {
@@ -678,6 +783,31 @@ if (instrumentsCheckbox.length > 0) {
         })
     })
 }
+
+//const searchFav = document.getElementById("searchFavorites")
+//
+//searchFav.addEventListener("click", async (e) => {
+//    e.preventDefault()
+//    if (dice.value !== "") {
+//        try {
+//            clean("content")
+//            loading.style.display = "block"
+//            let req = await fetchComAuth("/checkFavorites", {
+//                method="GET",
+//                body: JSON.stringify({ "query": dice.value })
+//            })
+//            if (req.ok && data.favoritos.length == 0) {
+//                contentBlock.innerHTML = "<p class=\"infoMessage\">Você ainda não tem músicas favoritas.</p>";
+//            } else if (req.ok || data.favoritos.length > 0) {
+//                
+//            }
+//        }
+//        catch (err) {
+//            console.log(err)
+//        }
+//    }
+//
+//})
 
 // =============================================
 // a partir daqui alguns códigos foram revisados juntamente de um agente de Ia

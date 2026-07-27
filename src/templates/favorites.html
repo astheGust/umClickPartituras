@@ -31,16 +31,20 @@
                 </div>
                 <div class="dropdown-row">
                     <button class="mini-diamondBtn"></button>
+                    <a class="dropdown-link" id="navPassword">Mudar senha</a>
+                </div>
+                <div class="dropdown-row">
+                    <button class="mini-diamondBtn"></button>
                     <a class="dropdown-link" id="navLogout">Sair</a>
                 </div>
             </div>
         </div>
     </header>
     <form>
-        <label for="query">
+        <!--<label for="query">
             <input type="text" id="query" placeholder="Pesquise suas músicas favoritas...">
         </label>
-        <button type="submit" id="send">Buscar</button>
+        <button type="submit" id="searchfavorites">Buscar</button>-->
     </form>
     <div id="loading"></div>
     <div id="content" style="flex-direction: row;"></div>
@@ -66,6 +70,27 @@
             <div class="modal-actions">
                 <button id="confirmLogout" class="button-confirm">Sim, Sair</button>
                 <button id="cancelLogout" class="button-cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="changePasswordModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Mudar Senha</h2>
+            <p>Digite sua senha:</p>
+            <div class="password-check-row">
+                <input type="password" id="currentPassword" class="password-input" placeholder="Senha atual">
+                <button id="checkPasswordBtn" class="button-check-password">Checar senha</button>
+            </div>
+            <p>Digite sua nova senha:</p>
+            <div class="password-fields">
+                <input type="password" id="newPassword" class="password-input" placeholder="Nova senha">
+                <input type="password" id="confirmNewPassword" class="password-input" placeholder="Confirmar nova senha">
+            </div>
+            <div class="modal-actions">
+                <button id="confirmChangePassword" class="button-confirm-change">Confirmar mudança</button>
+                <button id="cancelChangePassword" class="button-cancel">Cancelar</button>
+                <span class="processing" id="changePasswordProcessing">Processando...</span>
             </div>
         </div>
     </div>

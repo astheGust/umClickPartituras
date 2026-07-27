@@ -26,6 +26,7 @@ def duplicado(link_atual, lista_do_site):
 
 def searchQuery(query, instrumentList):
     sheets = {}
+    query = query[slice(1)].upper() + query[slice(1,len(query))]
     try:
         if instrumentList and instrumentList[0] != "":
             for instrument in instrumentList:

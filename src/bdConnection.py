@@ -58,3 +58,4 @@ def sqlQuery(query,params):
                 return cursor.rowcount
     except mysql.connector.Error as err:
         raise mysql.connector.Error("Erro Interno no Bd:",err)
+    

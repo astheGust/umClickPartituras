@@ -275,7 +275,9 @@ def removeFavorite():
 @app.route("/checkFavorites",methods=["GET"])
 @authenticateToken
 def checkFavorites():
+    #data = request.json
     id_user = g.user["userId"]
+    #query = data["query"]
     if(id_user):
         try:
             rows = sqlSelect("SELECT partituras.url,partituras.image_url,usuarios_favoritos.anotacoes FROM usuarios_favoritos JOIN partituras ON usuarios_favoritos.sheet_id = partituras.sheet_id WHERE usuarios_favoritos.user_id = %s",[id_user])
@@ -315,5 +317,52 @@ def refreshAcesstoken():
         except Exception as err:
             raise Exception({"Erro ao validar o token",err})
         
+#@app.route("/checkPassword",methods=["POST"])
+#@authenticateToken
+#def checkUserpassword():
+#    id_user = g.user["userId"]
+#    data = request.json
+#    payloadPass = data["password"]
+#    try:
+#        currentPass = sqlSelect("SELECT hashPassword FROM usuarios WHERE user_id = %s",[id_user])[0[0]]
+#        if(not payloadPass or not currentPass): return jsonify({"message":"erro em resgastar um dos valores"}),400
+#        if(comparePassword(payloadPass,currentPass)):
+#            return jsonify({"message":"Senha corresponde","success":True}),200
+#        else:
+#            return jsonify({"message":"Senha não corresponde","success":False}),401
+#    except Exception as err:
+#                print(err)
+#                return jsonify({ #erro nas funções sql
+#                "success":False,
+#                "message": str(err),
+#                'statusCode':500
+#            }), 500
+#    
+@app.route("/changePassword",methods=["PATCH"])
+@authenticateToken
+def changeUserpassword():
+    id_user = g.user["userId"]
+    data = request.json
+    currentPass = data["current"]
+    newPass = data["newPassword"]
+    try:
+        if( not currentPass != "" or not newPass != ""):
+            return jsonify({"message":"Não foi possível processar a mudança de senha"}),400
+        currentHashpass = sqlSelect("SELECT hashPass FROM usuarios WHERE user_id = %s",[id_user])[0][0]
+        if(not currentHashpass): return jsonify({"message":"erro em resgastar um valor"}),400
+        if(comparePassword(currentPass,currentHashpass)):
+            hashedPass = hashPassword(newPass)
+            sqlQuery("UPDATE usuarios SET hashPass = %s WHERE user_id = %s",[hashedPass,id_user])
+            return jsonify({"message":"Senha alterada com sucesso!","success":True}),200
+        else:
+            return jsonify({"message":"Senha não corresponde","success":False}),401
+    except Exception as err:
+            print(err)
+            return jsonify({ #erro nas funções sql
+            "success":False,
+            "message": str(err),
+            'statusCode':500
+        }), 500
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -581,6 +581,60 @@ a partir daqui boa parte foi criado com IA, para acelerar o desenvolvimento
   background-color: #218838;
 }
 
+/* ---- Modal de Mudar Senha ---- */
+
+.currentPassword {
+  display: flex;
+  gap: 10px;
+  margin: 0 auto 16px auto;
+  max-width: 80%;
+}
+
+.password-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.password-input {
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--inputBorder);
+  border-radius: 3px;
+  font-size: 0.95rem;
+  background: var(--inputBg);
+  color: var(--inputText);
+  transition: border-color .2s, box-shadow .2s, background .2s, color .2s;
+  width: 100%;
+}
+
+.password-input:focus {
+  outline: none;
+  border-color: #111;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, .06);
+}
+
+.password-input::placeholder {
+  color: var(--inputPlaceholder);
+}
+
+.modal-actions .button-confirm-change {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  margin: 0 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.modal-actions .button-confirm-change:hover {
+  background-color: #218838;
+}
+
 /* ---- Auth Pages (login & register) ---- */
 
 .authContainer {
